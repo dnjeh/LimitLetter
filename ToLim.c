@@ -17,7 +17,7 @@ void letter_space(char *sentence) {
     }
 }
 int time_vaild();
-int letter_etimelimit[4] ={2022, 9, 3, 23}, letter_stimelimit[4] ={2022, 9, 3, 21}, letter_ntime[4]; //占쏙옙효占썩간(占쏙옙, 占쏙옙, 占쏙옙, 占쏙옙) 占쌉뤄옙
+int letter_etimelimit[4] ={2022, 9, 4, 23}, letter_stimelimit[4] ={2022, 9, 4, 1}, letter_ntime[4]; //占쏙옙효占썩간(占쏙옙, 占쏙옙, 占쏙옙, 占쏙옙) 占쌉뤄옙
 
 int main(){
     system("chcp 949");
@@ -25,11 +25,11 @@ int main(){
     int i, j, k;
     int letter_mainc = 1; //占쏙옙占쌤쇽옙 占쌉뤄옙
     char  *letter_main[4][8] = { { //1占쏙옙占쏙옙
-    " 오늘이 당신의 생일이라는 소문을 들었으나,",
+    " 어제 당신의 생일이라는 소문을 들었으나,",
     "개인적인 사정으로 이런 형태로 선물을 보내고자 하니",
     "이로 인해 선물코드를 보내고자 함",
     "SQ2APYVSY9",
-    "*주의* 해당 메세지는 지금으로부터 3시간동안만 유효함",
+    "*주의* 해당 메세지는 오늘 하루 동안만 유효함",
     "",
     "",
     ""
@@ -62,7 +62,7 @@ int main(){
     ""
     } };
     char  *letter_top    = {"한 때 은지라고 불리었던 분께"};
-    char  *letter_bottom = {"2022년 9월 3일, 한 때 초람이라고 불렸던 자가"};
+    char  *letter_bottom = {"2022년 9월 4일, 한 때 초람이라고 불렸던 자가"};
     char  *letter_ps     = {"추신 : 생일 축하드려요, 즐거운 생일이였길.."};
     time_t t;
     t = time(NULL);
