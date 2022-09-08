@@ -61,9 +61,9 @@ int main(){
     "",
     ""
     } };
-    char  *letter_top    = {"배생숭 완운고전요약 전문가님께"};
-    char  *letter_bottom = {"2022년 8월 15일, 원본도 찾고자 하는 수목초 올림"};
-    char  *letter_ps     = {"추신 : 당신이 행복히 지내면 그무엇이 좋으리까"};
+    char  *letter_top    = {"께"};
+    char  *letter_bottom = {"2022년 8월 15일, 올림"};
+    char  *letter_ps     = {"추신 : "};
     time_t t;
     t = time(NULL);
     struct tm* monthandday;
