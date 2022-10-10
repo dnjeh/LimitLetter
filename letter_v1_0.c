@@ -14,8 +14,8 @@ int main(){
     system("chcp 65001");
     system("cls");
     int k;
-    char  letter_top[31];
-    char  letter_bottom[31];
+    char  letter_top[61];
+    char  letter_bottom[61];
     char  letter_ps[61];
     char  letter_title[31];
     char letter_mainc[3]; //문단 수
@@ -85,10 +85,10 @@ int main(){
             RemoveEnter(letter_ps);
             if(lselect) {
                 beforerand();
-                for(j=0;letter_top[j]!='\0'&&j<31;j++) {
+                for(j=0;letter_top[j]!='\0'&&j<61;j++) {
                     letter_top[j]=letter_top[j]-rand()%3;
                 }
-                for(j=0;letter_bottom[j]!='\0'&&j<31;j++) {
+                for(j=0;letter_bottom[j]!='\0'&&j<61;j++) {
                     letter_bottom[j]=letter_bottom[j]-rand()%3;
                 }
                 for(j=0;letter_ps[j]!='\0'&&j<61;j++) {
@@ -189,10 +189,10 @@ int main(){
         }
         fclose(fp);
         beforerand();
-        for(j=0;letter_top[j]!='\0'&&j<31;j++) {
+        for(j=0;letter_top[j]!='\0'&&j<61;j++) {
             letter_top[j]=letter_top[j]+rand()%3;
         }
-        for(j=0;letter_bottom[j]!='\0'&&j<31;j++) {
+        for(j=0;letter_bottom[j]!='\0'&&j<61;j++) {
             letter_bottom[j]=letter_bottom[j]+rand()%3;
         }
         for(j=0;letter_ps[j]!='\0'&&j<61;j++) {
