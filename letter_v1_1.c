@@ -58,26 +58,23 @@ int main(){
         }
         bre=0;
         CursorView(1);
-        while(!bre) {
-            gotoxy(56, 32);
-            printf("| 편지의 이름 (30byte 이하) :                                ");
-            gotoxy(86, 32);
-            scanf("%s", letter_title);
-            if((access(letter_title, 0) == -1)&&lselect) {
-                CursorView(0);
-                gotoxy(57, 32);
-                printf("  편지가 존재하지 않습니다(이름을 잘못 적으신게 아니신가요?)");
-                SSleep(3);
-            }
-            else if((access(letter_title, 0)!=-1)&&(lselect==0)) {
-                CursorView(0);
-                gotoxy(57, 32);
-                printf("                   이미 편지가 존재합니다");
-                SSleep(3);
-            }
-            else {
-                bre=1;
-            }
+        gotoxy(56, 32);
+        printf("| 편지의 이름 (30byte 이하) :                                ");
+        gotoxy(86, 32);
+        scanf("%s", letter_title);
+        if((access(letter_title, 0) == -1)&&lselect) {
+            CursorView(0);
+            gotoxy(57, 32);
+            printf("  편지가 존재하지 않습니다(이름을 잘못 적으신게 아니신가요?)");
+            SSleep(3);
+            goto home;
+        }
+        else if((access(letter_title, 0)!=-1)&&(lselect==0)) {
+            CursorView(0);
+            gotoxy(57, 32);
+            printf("                   이미 편지가 존재합니다");
+            SSleep(3);
+            goto home;
         }
         CursorView(0);
         drawletter();
@@ -95,7 +92,7 @@ int main(){
             RemoveEnter(letter_ps);
             gotoxy(57, 29);
             printf("     %s에게                  ", letter_top);
-            gotoxy(57, 31);
+            gotoxy(57, 30);
             printf("                         %d.%02d.%02d, %s 가     ", letter_limit[2][0], letter_limit[2][1], letter_limit[2][2], letter_bottom);
             gotoxy(57, 32);
             printf("         [읽기를 시작하시려면 space bar를 눌러주세요]");
@@ -118,12 +115,12 @@ int main(){
             RemoveEnter(letter_top);
             gotoxy(57, 29);
             printf("     %s에게                  ", letter_top);
-            gotoxy(57, 31);
+            gotoxy(57, 30);
             printf(" 보내는 사람의 이름 : %d.%02d.%02d, ",letter_limit[2][0], letter_limit[2][1], letter_limit[2][2]);
             fflush(stdin);
             fgets(letter_bottom, 30, stdin);
             RemoveEnter(letter_bottom);
-            gotoxy(57, 31);
+            gotoxy(57, 30);
             printf("                         %d.%02d.%02d, %s 가     ", letter_limit[2][0], letter_limit[2][1], letter_limit[2][2], letter_bottom);
             gotoxy(57, 32);
             printf("         [작성을 시작하시려면 space bar를 눌러주세요]");
@@ -147,44 +144,44 @@ int main(){
         for(i=0;i<(int)letter_mainc[0];i++) {
             for(j=0;j<8;j++) {
                 fgets(letter_main[i][j], sizeof(letter_main[i][j]), fp);
-                RemoveEnter(letter_main[i][j]);
             }
         }
         fclose(fp);
-        gotoxy(44, 2);
+        gotoxy(44, 3);
         printf(" %s 에게                                            ", letter_top);
         for(i=0;i<(int)letter_mainc[0];i++) {
             CursorView(0);
             for(j=0;j<8;j++) {
-                gotoxy(44, 4+i*9+j);
+                gotoxy(44, 5+i*9+j);
                 printf("%s", letter_main[i][j]);
                 SSleep(1);
             }
+            gotoxy(44, 6+i*9+j);
             CursorView(1);
             getch();
         }
-        gotoxy(44, 6+(i-1)*9+j);
-        printf("                         %d.%02d.%02d, %s 가     ", letter_limit[2][0], letter_limit[2][1], letter_limit[2][2], letter_bottom);
+        gotoxy(44, 42);
+        printf("                                                         %d.%02d.%02d, %s 가     ", letter_limit[2][0], letter_limit[2][1], letter_limit[2][2], letter_bottom);
         CursorView(0);
     }
     else {
-        gotoxy(44, 2);
+        gotoxy(44, 3);
         printf("작성할 문단의 갯수 : ");
         scanf("%c", &letter_mainc[0]);
         fflush(stdin);
-        gotoxy(44, 2);
+        gotoxy(44, 3);
         printf(" %s 에게                                            ", letter_top);
         letter_mainc[0]-=48;
         CursorView(1);
         for(i=0;i<(int)letter_mainc[0];i++) {
             for(j=0;j<8;j++) {
-                gotoxy(44, 4+i*9+j);
+                gotoxy(44, 5+i*9+j);
                 fgets(letter_main[i][j], sizeof(letter_main[i][j]), stdin);
                 fflush(stdin);
             }
         }
-        gotoxy(44, 6+(i-1)*9+j);
-        printf("                         %d.%02d.%02d, %s 가     ", letter_limit[2][0], letter_limit[2][1], letter_limit[2][2], letter_bottom);
+        gotoxy(44, 42);
+        printf("                                                         %d.%02d.%02d, %s 가     ", letter_limit[2][0], letter_limit[2][1], letter_limit[2][2], letter_bottom);
         fp=fopen(letter_title , "w");
         fprintf(fp, "%s\n", letter_top);
         fprintf(fp, "%s\n", letter_bottom);
