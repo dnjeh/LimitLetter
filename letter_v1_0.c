@@ -4,7 +4,7 @@
 #include <time.h>    //64 20
 #include <windows.h>
 #include <string.h>
-int i, j, lselect=1, bre=0, bre2=0;
+int i, j, k, lselect=1, bre=0, bre2=0;
 int time_vaild();void gotoxy(int x, int y);void CursorView(); void RemoveEnter(char *sentense); void drawmain();
 void CursorView(int a);void drawbody();void beforerand();void drawletter();void SSleep(int a_second);
 int letter_limit[3][4] ={{2022, 9, 25, 21}, {2022, 9, 11, 17}, {0, 0, 0, 0}}; //유효기간 입력
@@ -23,7 +23,7 @@ int main(){
         {"","","","","","","",""},{"","","","","","","",""},
         {"","","","","","","",""},{"","","","","","","",""} 
     };
-    FILE *fp;
+    FILE *fp, *fp2;
     char  *command;
     time_t t;
     t = time(NULL);
@@ -40,7 +40,7 @@ int main(){
         drawletter();
         while(!bre) {
             gotoxy(56, 32);
-            printf("|                 편지 열기          편지 쓰기                 |");
+            printf("|                 편지 열기          편지로 변환               |");
             if(lselect) gotoxy(71, 32);
             else gotoxy(90, 32);
             printf("√");
@@ -62,17 +62,10 @@ int main(){
         printf("| 편지의 이름 (30byte 이하) :                                ");
         gotoxy(86, 32);
         scanf("%s", letter_title);
-        if((access(letter_title, 0) == -1)&&lselect) {
+        if((access(letter_title, 0) == -1)) {
             CursorView(0);
             gotoxy(57, 32);
             printf("  편지가 존재하지 않습니다(이름을 잘못 적으신게 아니신가요?)");
-            SSleep(3);
-            goto home;
-        }
-        else if((access(letter_title, 0)!=-1)&&(lselect==0)) {
-            CursorView(0);
-            gotoxy(57, 32);
-            printf("                   이미 편지가 존재합니다");
             SSleep(3);
             goto home;
         }
@@ -82,7 +75,7 @@ int main(){
             gotoxy(56, 15+i);
             printf("|                                                              |");
         }
-        if(lselect) {
+        //if(lselect) {
             fp=fopen(letter_title, "r");
             fgets( letter_top, sizeof(letter_top), fp);
             fgets( letter_bottom, sizeof(letter_bottom), fp);
@@ -90,12 +83,30 @@ int main(){
             RemoveEnter(letter_top);
             RemoveEnter(letter_bottom);
             RemoveEnter(letter_ps);
+            if(!lselect) {
+                beforerand();
+                for(j=0;letter_top[j]!='\0'&&j<31;j++) {
+                    letter_top[j]=letter_top[j]-rand()%3;
+                }
+                for(j=0;letter_bottom[j]!='\0'&&j<31;j++) {
+                    letter_bottom[j]=letter_bottom[j]-rand()%3;
+                }
+                for(j=0;letter_ps[j]!='\0'&&j<61;j++) {
+                    letter_ps[j]=letter_ps[j]-rand()%3;
+                }
+            }
             gotoxy(57, 29);
             printf("     %s에게                  ", letter_top);
             gotoxy(57, 30);
             printf("                         %d.%02d.%02d, %s 가     ", letter_limit[2][0], letter_limit[2][1], letter_limit[2][2], letter_bottom);
             gotoxy(57, 32);
-            printf("         [읽기를 시작하시려면 space bar를 눌러주세요]");
+        
+            if(lselect) {
+                printf("         [읽기를 시작하시려면 space bar를 눌러주세요]");
+            }
+            else {
+                printf("         [변환을 시작하시려면 space bar를 눌러주세요]");
+            }
             switch(getch()) {
                 case ' ':
                     bre2=1;
@@ -103,8 +114,8 @@ int main(){
                 default:
                     break;
             }
-        }
-        else {
+        //}
+        /*else {
             CursorView(1);
             gotoxy(57, 27);
             printf(" 편지 파일의 이름 : %s", letter_title);
@@ -132,18 +143,22 @@ int main(){
                     break;
             }
             CursorView(0);
-        }
+        }*/
     }
     bre2=bre=0;
     CursorView(0);
-    drawbody();
-    drawmain();
     if(lselect) {
+        drawbody();
+        drawmain();
         fgets(letter_mainc, sizeof(letter_mainc), fp);
         letter_mainc[0]-=48;
+        beforerand();
         for(i=0;i<(int)letter_mainc[0];i++) {
             for(j=0;j<8;j++) {
                 fgets(letter_main[i][j], sizeof(letter_main[i][j]), fp);
+                for(k=0;letter_main[i][j][k]!='\n'&&k<269;k++) {
+                    letter_main[i][j][k]=letter_main[i][j][k]-rand()%3;
+                }
             }
         }
         fclose(fp);
@@ -165,7 +180,55 @@ int main(){
         CursorView(0);
     }
     else {
-        gotoxy(44, 3);
+        fgets(letter_mainc, sizeof(letter_mainc), fp);
+        letter_mainc[0]-=48;
+        for(i=0;i<(int)letter_mainc[0];i++) {
+            for(j=0;j<8;j++) {
+                fgets(letter_main[i][j], sizeof(letter_main[i][j]), fp);
+            }
+        }
+        fclose(fp);
+        beforerand();
+        for(j=0;letter_top[j]!='\0'&&j<31;j++) {
+            letter_top[j]=letter_top[j]+rand()%3;
+        }
+        for(j=0;letter_bottom[j]!='\0'&&j<31;j++) {
+            letter_bottom[j]=letter_bottom[j]+rand()%3;
+        }
+        for(j=0;letter_ps[j]!='\0'&&j<61;j++) {
+            letter_ps[j]=letter_ps[j]+rand()%3;
+        }
+        beforerand();
+        for(i=0;i<(int)letter_mainc[0];i++) {
+            for(j=0;j<8;j++) {
+                for(k=0;letter_main[i][j][k]!='\n'&&k<269;k++) {
+                    letter_main[i][j][k]=letter_main[i][j][k]+rand()%3;
+                }
+            }
+        }
+        for(i=0;letter_title[i]!='\0';i++) {
+            if(letter_title[i]=='\0') {
+                break;
+            }
+        }
+        if(i<=29) {
+            letter_title[i]='_';
+            letter_title[i+1]='\0';
+        }
+        fp2=fopen(letter_title, "w");
+        fprintf(fp2, "%s\n", letter_top);
+        fprintf(fp2, "%s\n", letter_bottom);
+        fprintf(fp2, "%s\n", letter_ps);
+        fprintf(fp2, "%d\n", letter_mainc[0]);
+        for(i=0;i<(int)letter_mainc[0];i++) {
+            for(j=0;j<8;j++) {
+                fprintf(fp, "%s", letter_main[i][j]);
+            }
+        }
+        gotoxy(57, 32);
+        printf("                 편지로 변환이 완료되었습니다!             ");
+        fclose(fp2);
+        /*gotoxy(44, 3);
         printf("작성할 문단의 갯수 : ");
         scanf("%c", &letter_mainc[0]);
         fflush(stdin);
@@ -194,7 +257,7 @@ int main(){
         }
         fclose(fp);
         gotoxy(73, 45);
-        printf("편지 작성이 완료되었습니다!");
+        printf("편지 작성이 완료되었습니다!");*/
     }
     SSleep(3);
     goto home;
@@ -202,7 +265,7 @@ int main(){
 
 
 void beforerand() {
-    srand(letter_limit[0][0]+letter_limit[0][1]+letter_limit[0][2]+letter_limit[0][3]+letter_limit[1][0]+letter_limit[1][1]+letter_limit[1][2]+letter_limit[1][3]);
+    srand(letter_limit[0][0]+letter_limit[0][1]+letter_limit[0][2]+letter_limit[0][3]+letter_limit[1][0]+letter_limit[1][1]+letter_limit[1][2]+letter_limit[1][3]+'a'+'u'+'t'+'u'+'m'+'n');
 }
 void gotoxy(int x,int y) { //gotoxy함수 
     COORD pos={x,y};
@@ -246,7 +309,7 @@ void drawletter() {
             case 13: printf("|            __,        _|_         _  _  _    _  _            |"); break;
             case 14: printf("|           /  |  |   |  |  |   |  / |/ |/ |  / |/ |           |"); break;
             case 15: printf("|           \\_/|_/ \\_/|_/|_/ \\_/|_/  |  |  |_/  |  |_/         |"); break;
-            case 16: printf("|                                                              |"); break;
+            case 16: printf("|                            b e t a                           |"); break;
             case 17: printf("|                                                              |"); break;
             case 18: printf("|                                                              |"); break;
             case 19: printf(" -------------------------------------------------------------- "); break;
