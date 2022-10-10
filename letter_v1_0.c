@@ -83,7 +83,7 @@ int main(){
             RemoveEnter(letter_top);
             RemoveEnter(letter_bottom);
             RemoveEnter(letter_ps);
-            if(!lselect) {
+            if(lselect) {
                 beforerand();
                 for(j=0;letter_top[j]!='\0'&&j<31;j++) {
                     letter_top[j]=letter_top[j]-rand()%3;
