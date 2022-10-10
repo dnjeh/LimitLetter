@@ -33,6 +33,7 @@ int main(){
     letter_limit[2][1] = monthandday->tm_mon + 1;
     letter_limit[2][2] = monthandday->tm_mday;
     letter_limit[2][3] = monthandday->tm_hour;
+    home:
     CursorView(0);
     while(!bre2) {
         drawbody();
@@ -136,14 +137,13 @@ int main(){
             CursorView(0);
         }
     }
+    bre2=bre=0;
     CursorView(0);
     drawbody();
     drawmain();
     if(lselect) {
         fgets(letter_mainc, sizeof(letter_mainc), fp);
-        RemoveEnter(letter_mainc);
         letter_mainc[0]-=48;
-        getch();
         for(i=0;i<(int)letter_mainc[0];i++) {
             for(j=0;j<8;j++) {
                 fgets(letter_main[i][j], sizeof(letter_main[i][j]), fp);
@@ -151,16 +151,21 @@ int main(){
             }
         }
         fclose(fp);
+        gotoxy(44, 2);
+        printf(" %s 에게                                            ", letter_top);
         for(i=0;i<(int)letter_mainc[0];i++) {
             CursorView(0);
             for(j=0;j<8;j++) {
-                gotoxy(44, 2+i*9+j);
+                gotoxy(44, 4+i*9+j);
                 printf("%s", letter_main[i][j]);
                 SSleep(1);
             }
             CursorView(1);
             getch();
         }
+        gotoxy(44, 6+(i-1)*9+j);
+        printf("                         %d.%02d.%02d, %s 가     ", letter_limit[2][0], letter_limit[2][1], letter_limit[2][2], letter_bottom);
+        CursorView(0);
     }
     else {
         gotoxy(44, 2);
@@ -168,16 +173,18 @@ int main(){
         scanf("%c", &letter_mainc[0]);
         fflush(stdin);
         gotoxy(44, 2);
-        printf(" %s                                                 ", letter_top);
+        printf(" %s 에게                                            ", letter_top);
         letter_mainc[0]-=48;
         CursorView(1);
         for(i=0;i<(int)letter_mainc[0];i++) {
             for(j=0;j<8;j++) {
-                gotoxy(44, 3+i*9+j);
+                gotoxy(44, 4+i*9+j);
                 fgets(letter_main[i][j], sizeof(letter_main[i][j]), stdin);
                 fflush(stdin);
             }
         }
+        gotoxy(44, 6+(i-1)*9+j);
+        printf("                         %d.%02d.%02d, %s 가     ", letter_limit[2][0], letter_limit[2][1], letter_limit[2][2], letter_bottom);
         fp=fopen(letter_title , "w");
         fprintf(fp, "%s\n", letter_top);
         fprintf(fp, "%s\n", letter_bottom);
@@ -185,14 +192,15 @@ int main(){
         fprintf(fp, "%d\n", letter_mainc[0]);
         for(i=0;i<(int)letter_mainc[0];i++) {
             for(j=0;j<8;j++) {
-                fprintf(fp, "%s\n", letter_main[i][j]);
+                fprintf(fp, "%s", letter_main[i][j]);
             }
         }
         fclose(fp);
-        gotoxy(66, 45);
-        printf("편지 저장이 완료되었습니다!");
-        getch();
+        gotoxy(73, 45);
+        printf("편지 작성이 완료되었습니다!");
     }
+    SSleep(3);
+    goto home;
 }   
 
 
@@ -218,7 +226,7 @@ void CursorView(int a) {
 }
 void RemoveEnter(char *sentence) {
     for(i=0;sentence[i]!='\0';i++) {
-        if(sentence[i+1]=='\0') sentence[i]=' ';
+        if(sentence[i]=='\n') sentence[i]='\0';
     }
 }
 void drawletter() {
