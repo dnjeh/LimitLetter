@@ -19,7 +19,7 @@ int main(){
     char  letter_ps[61];
     char  letter_title[31];
     char letter_mainc[3]; //문단 수
-    char  letter_main[4][8][270] = { 
+    char  letter_main[4][8][540] = { 
         {"","","","","","","",""},{"","","","","","","",""},
         {"","","","","","","",""},{"","","","","","","",""} 
     };
@@ -156,7 +156,7 @@ int main(){
         for(i=0;i<(int)letter_mainc[0];i++) {
             for(j=0;j<8;j++) {
                 fgets(letter_main[i][j], sizeof(letter_main[i][j]), fp);
-                for(k=0;letter_main[i][j][k]!='\n'&&k<269;k++) {
+                for(k=0;letter_main[i][j][k]!='\n'&&k<539;k++) {
                     letter_main[i][j][k]=letter_main[i][j][k]-rand()%3;
                 }
             }
@@ -201,7 +201,7 @@ int main(){
         beforerand();
         for(i=0;i<(int)letter_mainc[0];i++) {
             for(j=0;j<8;j++) {
-                for(k=0;letter_main[i][j][k]!='\n'&&k<269;k++) {
+                for(k=0;letter_main[i][j][k]!='\n'&&k<539;k++) {
                     letter_main[i][j][k]=letter_main[i][j][k]+rand()%3;
                 }
             }
