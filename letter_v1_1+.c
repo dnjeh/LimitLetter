@@ -8,7 +8,7 @@ int i, j, k, lselect=1; //1일 시 읽기(디코딩)
 int bre=0, bre2=0;
 int time_vaild();void gotoxy(int x, int y);void CursorView(); void RemoveEnter(char *sentence, int siz); void drawmain();void SSleep(int a_second); 
 void CursorView(int a);void drawbody();void beforerand();void drawletter();void eCoding(int a, char sentence[], int siz, char end_char);
-int letter_limit[3][4] ={{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}; //유효기간 입력
+int letter_limit[3][4] ={{2022, 11, 13, 21}, {2022, 11, 13, 20}, {0, 0, 0, 0}}; //유효기간 입력
 
 int main(){
     system("mode con cols=177 lines=50");        //사전 설정 문단
@@ -39,6 +39,8 @@ int main(){
         while(!bre) {                //메인화면
             gotoxy(56, 32);
             printf("|                 편지 열기          편지로 변환               |");
+            gotoxy(112, 33);
+            printf("v1.1+");
             if(lselect) gotoxy(71, 32);
             else gotoxy(90, 32);
             printf("√");
