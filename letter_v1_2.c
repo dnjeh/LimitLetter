@@ -6,8 +6,8 @@
 #include <string.h>
 int i, j, k, lselect=1; //1일 시 읽기(디코딩)
 int bre=0, bre2=0;
-int time_vaild();void gotoxy(int x, int y);void CursorView(); void RemoveEnter(char *sentense); void drawmain();
-void CursorView(int a);void drawbody();void beforerand();void drawletter();void SSleep(int a_second);
+int time_vaild();void gotoxy(int x, int y);void CursorView(); void RemoveEnter(char *sentence, int siz); void drawmain();void SSleep(int a_second); 
+void CursorView(int a);void drawbody();void beforerand();void drawletter();void eCoding(int a, char sentence[], int siz, char end_char);
 int letter_limit[3][4] ={{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}}; //유효기간 입력
 
 int main(){
@@ -78,20 +78,14 @@ int main(){
             fgets( letter_top, sizeof(letter_top), fp);
             fgets( letter_bottom, sizeof(letter_bottom), fp);
             fgets( letter_ps, sizeof(letter_ps), fp);
-            RemoveEnter(letter_top);
-            RemoveEnter(letter_bottom);
-            RemoveEnter(letter_ps);
+            RemoveEnter(letter_top, sizeof(letter_top));
+            RemoveEnter(letter_bottom, sizeof(letter_bottom));
+            RemoveEnter(letter_ps, sizeof(letter_ps));
             if(lselect) {                                            //읽기 시 디코딩
                 beforerand();
-                for(j=0;letter_top[j]!='\0'&&j<61;j++) {
-                    letter_top[j]=letter_top[j]-rand()%3;
-                }
-                for(j=0;letter_bottom[j]!='\0'&&j<61;j++) {
-                    letter_bottom[j]=letter_bottom[j]-rand()%3;
-                }
-                for(j=0;letter_ps[j]!='\0'&&j<61;j++) {
-                    letter_ps[j]=letter_ps[j]-rand()%3;
-                }
+                eCoding(0, letter_top, sizeof(letter_top), '\0');
+                eCoding(0, letter_bottom, sizeof(letter_bottom), '\0');
+                eCoding(0, letter_ps, sizeof(letter_ps), '\0');
             }
             gotoxy(57, 29);                                                //단계 진입 전 안내문구
             printf("     %s에게                  ", letter_top);
@@ -121,14 +115,14 @@ int main(){
             printf(" 받는 사람의 이름 : ");
             fflush(stdin);
             fgets(letter_top, 30, stdin);
-            RemoveEnter(letter_top);
+            RemoveEnter(letter_top, sizeof(letter_top));
             gotoxy(57, 29);
             printf("     %s에게                  ", letter_top);
             gotoxy(57, 30);
             printf(" 보내는 사람의 이름 : %d.%02d.%02d, ",letter_limit[2][0], letter_limit[2][1], letter_limit[2][2]);
             fflush(stdin);
             fgets(letter_bottom, 30, stdin);
-            RemoveEnter(letter_bottom);
+            RemoveEnter(letter_bottom, sizeof(letter_bottom));
             gotoxy(57, 30);
             printf("                         %d.%02d.%02d, %s 가     ", letter_limit[2][0], letter_limit[2][1], letter_limit[2][2], letter_bottom);
             gotoxy(57, 32);
@@ -160,9 +154,7 @@ int main(){
         for(i=0;i<(int)letter_mainc[0];i++) {                                 //사전 읽고 디코딩 작업
             for(j=0;j<8;j++) {
                 fgets(letter_main[i][j], sizeof(letter_main[i][j]), fp);
-                for(k=0;letter_main[i][j][k]!='\n'&&k<539;k++) {
-                    letter_main[i][j][k]=letter_main[i][j][k]-rand()%3;
-                }
+                eCoding(0, letter_main[i][j], sizeof(letter_main[i][j]), '\n');
             }
         }
         fclose(fp);                                                     //파일 읽기 종료
@@ -188,6 +180,7 @@ int main(){
         CursorView(0);
     }
     else {                                   //파일 변환시 (인코딩)
+        printf("0");
         for(i=0;i<(int)letter_mainc[0];i++) {
             for(j=0;j<8;j++) {
                 fgets(letter_main[i][j], sizeof(letter_main[i][j]), fp); 
@@ -195,21 +188,13 @@ int main(){
         }
         fclose(fp);                                 //일단 다 읽어놓고 닫기
         beforerand();
-        for(j=0;letter_top[j]!='\0'&&j<61;j++) {                     //문단 인코딩 작업
-            letter_top[j]=letter_top[j]+rand()%3;
-        }
-        for(j=0;letter_bottom[j]!='\0'&&j<61;j++) {
-            letter_bottom[j]=letter_bottom[j]+rand()%3;
-        }
-        for(j=0;letter_ps[j]!='\0'&&j<61;j++) {
-            letter_ps[j]=letter_ps[j]+rand()%3;
-        }
+        eCoding(1, letter_top, sizeof(letter_top), '\0');                     //문단 인코딩 작업
+        eCoding(1, letter_bottom, sizeof(letter_bottom), '\0');
+        eCoding(1, letter_ps, sizeof(letter_ps), '\0');
         beforerand();
         for(i=0;i<(int)letter_mainc[0];i++) {                          //본문 인코딩 작업
             for(j=0;j<8;j++) {
-                for(k=0;letter_main[i][j][k]!='\n'&&k<539;k++) {
-                    letter_main[i][j][k]=letter_main[i][j][k]+rand()%3;
-                }
+                eCoding(1, letter_main[i][j], sizeof(letter_main[i][j])-1, '\n');
             }
         }
         for(i=0;letter_title[i]!='\0';i++) {        //편지 파일 이름 글자수 세기
@@ -221,12 +206,12 @@ int main(){
             letter_title[i]='_';
             letter_title[i+1]='\0';
         }
-        fp2=fopen(letter_title, "w");                       //변환된 편지로 출력
+        fp2=fopen(letter_title, "w");                       //변환된 편지이름으로 출력
         fprintf(fp2, "%s\n", letter_top);
         fprintf(fp2, "%s\n", letter_bottom);
         fprintf(fp2, "%s\n", letter_ps);
         fprintf(fp2, "%d\n", letter_mainc[0]);
-        for(i=0;i<(int)letter_mainc[0];i++) {                   //본문 변환
+        for(i=0;i<(int)letter_mainc[0];i++) {                   //변환된 본문 출력
             for(j=0;j<8;j++) {
                 fprintf(fp, "%s", letter_main[i][j]);
             }
@@ -271,68 +256,56 @@ int main(){
 
 //----------------------------------------------------------------------------------------------------------
 
-void beforerand() {
+void beforerand() {  //사전 시드 설정 작업
     srand(letter_limit[0][0]+letter_limit[0][1]+letter_limit[0][2]+letter_limit[0][3]+letter_limit[1][0]+letter_limit[1][1]+letter_limit[1][2]+letter_limit[1][3]+'a'+'u'+'t'+'u'+'m'+'n');
 }
 void gotoxy(int x,int y) { //gotoxy함수 
     COORD pos={x,y};
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),pos);
 }
-void SSleep(int a_second) {
+void SSleep(int a_second) { //잠시 쉬기
     clock_t start_clk = clock();  // 시작 시간을 구한다.
     a_second--;
     while (1) {                  // 지속적으로 clock 함수를 호출하여 흘러간 시간을 계산한다.
         if ((clock() - start_clk) / CLOCKS_PER_SEC > a_second) break;
     }
 }
-void CursorView(int a) {
+void CursorView(int a) { //커서 활성화 여부 (1이 보임, 0이 안 보임)
     CONSOLE_CURSOR_INFO cursorInfo = { 0, };
     cursorInfo.dwSize = 1; //커서 굵기 (1 ~ 100)
     cursorInfo.bVisible = a?TRUE:FALSE; //커서 Visible TRUE(보임) FALSE(숨김)
     SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursorInfo);
 }
-void RemoveEnter(char *sentence) {
-    for(i=0;sentence[i]!='\0';i++) {
+void RemoveEnter(char *sentence, int siz) {
+    int i;
+    for(i=0;sentence[i]!='\0'&&i<siz;i++) {
         if(sentence[i]=='\n') sentence[i]='\0';
     }
 }
-void drawletter() {
-    for(i=0;i<20;i++) {
-        gotoxy(56, 15+i);
-        switch(i) {
-            case 0:  printf(" ______________________________________________________________ "); break;
-            case 1:  printf("| _                                                          _ |"); break;
-            case 2:  printf("|   _                                                      _   |"); break;
-            case 3:  printf("|     _                                                  _     |"); break;
-            case 4:  printf("|       _                                              _       |"); break;
-            case 5:  printf("|         _                                          _         |"); break;
-            case 6:  printf("|           _                                      _           |"); break;
-            case 7:  printf("|             _                                  _             |"); break;
-            case 8:  printf("|                _                            _                |"); break;
-            case 9:  printf("|                   _                      _                   |"); break;
-            case 10: printf("|                       _              _                       |"); break;
-            case 11: printf("|                          __________                          |"); break;
-            case 12: printf("|                                                              |"); break;
-            case 13: printf("|            __,        _|_         _  _  _    _  _            |"); break;
-            case 14: printf("|           /  |  |   |  |  |   |  / |/ |/ |  / |/ |           |"); break;
-            case 15: printf("|           \\_/|_/ \\_/|_/|_/ \\_/|_/  |  |  |_/  |  |_/         |"); break;
-            case 16: printf("|                            b e t a                           |"); break;
-            case 17: printf("|                                                              |"); break;
-            case 18: printf("|                                                              |"); break;
-            case 19: printf(" -------------------------------------------------------------- "); break;
+void eCoding(int a, char sentence[], int siz, char end_char) { //1일시 인코딩(변환) 0일시 디코딩(읽기)
+    int i;
+    if(a) {
+        for(i=0;sentence[i]!=end_char&&i<siz;i++) {
+            sentence[i]=sentence[i]+rand()%3;
+        }
+    }
+    else {
+        for(i=0;sentence[i]!=end_char&&i<siz;i++) {
+            sentence[i]=sentence[i]-rand()%3;
         }
     }
 }
-void drawmain() {
+void drawmain() {    //기본 편지 양식 작성
+    int i;
     for(i=0;i<46;i++) {
         gotoxy(42, 1+i);
         switch(i) {
             case 0: case 45: printf(" ____________________________________________________________________________________________ "); break;
-            default:  printf("/ %90s /", " "); break;
+            default:  printf("| %90s |", " "); break;
         }
     }
 }
-int time_vaild() {
+int time_vaild() {                  //시간 검증 함수
     long long int letter_vaild[3];
     int bre=1, t=letter_limit[i][1];
     for(i=0;i<3;i++) {
@@ -364,7 +337,34 @@ int time_vaild() {
     if(letter_vaild[0]>=letter_vaild[2]&&letter_vaild[1]<=letter_vaild[2]) return 1;
     else return 0;
 }
-void drawbody() {
+void drawletter() {   //편지 모양 쓰기
+    for(i=0;i<20;i++) {
+        gotoxy(56, 15+i);
+        switch(i) {
+            case 0:  printf(" ______________________________________________________________ "); break;
+            case 1:  printf("| _                                                          _ |"); break;
+            case 2:  printf("|   _                                                      _   |"); break;
+            case 3:  printf("|     _                                                  _     |"); break;
+            case 4:  printf("|       _                                              _       |"); break;
+            case 5:  printf("|         _                                          _         |"); break;
+            case 6:  printf("|           _                                      _           |"); break;
+            case 7:  printf("|             _                                  _             |"); break;
+            case 8:  printf("|                _                            _                |"); break;
+            case 9:  printf("|                   _                      _                   |"); break;
+            case 10: printf("|                       _              _                       |"); break;
+            case 11: printf("|                          __________                          |"); break;
+            case 12: printf("|                                                              |"); break;
+            case 13: printf("|            __,        _|_         _  _  _    _  _            |"); break;
+            case 14: printf("|           /  |  |   |  |  |   |  / |/ |/ |  / |/ |           |"); break;
+            case 15: printf("|           \\_/|_/ \\_/|_/|_/ \\_/|_/  |  |  |_/  |  |_/         |"); break;
+            case 16: printf("|                            b e t a                           |"); break;
+            case 17: printf("|                                                              |"); break;
+            case 18: printf("|                                                              |"); break;
+            case 19: printf(" -------------------------------------------------------------- "); break;
+        }
+    }
+}
+void drawbody() {   //화면 출력 함수
     gotoxy(0, 0);
     printf("⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣿⣿⠀⠀⠀⠀⠀⠀⠀");
     printf("⠀⠀⠀⠀⠀⠀⠀⠀⠀⣶⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣾⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣾⠛⠀⠀⠀⠀⠀⠀⠀⠀⠀");
