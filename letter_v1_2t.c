@@ -8,19 +8,18 @@ int i, j, k, lselect=1; //1일 시 읽기(디코딩)
 int bre=0, bre2=0;
 int time_vaild();void gotoxy(int x, int y);void CursorView(); void RemoveEnter(char *sentence, int siz); void drawmain();void SSleep(int a_second); 
 void CursorView(int a);void drawbody();void beforerand();void drawletter();void eCoding(int a, char sentence[], int siz, char end_char);
-void BCoding(int a, char sentence[], char sentence2[], int siz);
-int letter_limit[3][4] ={{2022, 11, 13, 21}, {2022, 11, 13, 20}, {0, 0, 0, 0}}; //유효기간 입력
+int letter_limit[3][4] ={0,}; //유효기간 입력
 
 int main(){
     system("mode con cols=177 lines=50");        //사전 설정 문단
     system("chcp 65001");
     system("cls");
     int k;
-    char letter_top[63]={'\0',};   char letter2_top[63/3*4]={'\0',};
-    char letter_bottom[63]={'\0',};char letter2_bottom[63/3*4]={'\0',};
-    char letter_ps[63]={'\0',};    char letter2_ps[63/3*4]={'\0',};
-    char letter_title[33]={'\0',}; char letter2_title[33/3*4]={'\0',};
-    char letter_mainc[3]={'\0',}; //문단 수
+    char letter_top[61];
+    char letter_bottom[61];
+    char letter_ps[61];
+    char letter_title[31];
+    char letter_mainc[3]; //문단 수
 
     FILE *fp, *fp2;
     char  *command;
@@ -41,7 +40,7 @@ int main(){
             gotoxy(56, 32);
             printf("|                 편지 열기          편지로 변환               |");
             gotoxy(112, 33);
-            printf("v1.1+");
+            printf("v1.2t");
             if(lselect) gotoxy(71, 32);
             else gotoxy(90, 32);
             printf("√");
@@ -77,36 +76,50 @@ int main(){
             printf("|                                                              |");
         }
         //if(lselect) {
-            fp=fopen(letter_title, "r");                       //편지 읽기
-            if(lselect) {
-                fgets(letter2_top, sizeof(letter2_top), fp);
-                fgets(letter2_bottom, sizeof(letter2_bottom), fp);
-                fgets(letter2_ps, sizeof(letter2_ps), fp);
-                RemoveEnter(letter2_top, sizeof(letter2_top));
-                RemoveEnter(letter2_bottom, sizeof(letter2_bottom));
-                RemoveEnter(letter2_ps, sizeof(letter2_ps));
-            }
-            else {
-                fgets(letter_top, sizeof(letter_top), fp);
-                fgets(letter_bottom, sizeof(letter_bottom), fp);
-                fgets(letter_ps, sizeof(letter_ps), fp);
-                RemoveEnter(letter_top, sizeof(letter_top));
-                RemoveEnter(letter_bottom, sizeof(letter_bottom));
-                RemoveEnter(letter_ps, sizeof(letter_ps));
-            }
+            fp=fopen(letter_title, "r");                       //편지 읽기 
+            fgets( letter_top, sizeof(letter_top), fp);
+            fgets( letter_bottom, sizeof(letter_bottom), fp);
+            fgets( letter_ps, sizeof(letter_ps), fp);
+            RemoveEnter(letter_top, sizeof(letter_top));
+            RemoveEnter(letter_bottom, sizeof(letter_bottom));
+            RemoveEnter(letter_ps, sizeof(letter_ps));
             if(lselect) {                                            //읽기 시 디코딩
-                beforerand();
-                eCoding(0, letter2_top, sizeof(letter2_top), '\0');
-                eCoding(0, letter2_bottom, sizeof(letter2_bottom), '\0');
-                eCoding(0, letter2_ps, sizeof(letter2_ps), '\0');
-                BCoding(0, letter_top, letter2_top, sizeof(letter_top));
-                BCoding(0, letter_bottom, letter2_bottom, sizeof(letter_bottom));
-                BCoding(0, letter_ps, letter2_ps, sizeof(letter_ps));
+                beforerand(1);
+                eCoding(0, letter_top, sizeof(letter_top), '\0');
+                eCoding(0, letter_bottom, sizeof(letter_bottom), '\0');
+                eCoding(0, letter_ps, sizeof(letter_ps), '\0');
+            }
+            if(letter_limit[0][0]==0) {
+                for(i=0;i<20;i++) {
+                    switch(i%10) {
+                    case 0: j=1000; case 1: case 2: case 3:
+                        letter_limit[i/10][0]+=(letter_ps[i]-48)*j;
+                        j/=10;
+                        break;
+                    case 4: j=10; case 5:
+                        letter_limit[i/10][1]+=(letter_ps[i]-48)*j;
+                        j/=10;
+                        break;
+                    case 6: j=10; case 7:
+                        letter_limit[i/10][2]+=(letter_ps[i]-48)*j;
+                        j/=10;
+                        break;
+                    case 8: j=10; case 9:
+                        letter_limit[i/10][3]+=(letter_ps[i]-48)*j;
+                        j/=10;
+                        break;
+                    default:
+                        break;
+                    }
+                }
+            }
+            if(!time_vaild()) {
+                goto home;
             }
             gotoxy(57, 29);                                                //단계 진입 전 안내문구
             printf("     %s에게                  ", letter_top);
             gotoxy(57, 30);
-            printf("                         %d.%02d.%02d, %s 가     ", letter_limit[2][0], letter_limit[2][1], letter_limit[2][2], letter_bottom);
+            printf("      %d.%02d.%02d/%02d ~ %d.%02d.%02d/%02d, %s 가", letter_limit[1][0], letter_limit[1][1], letter_limit[1][2], letter_limit[1][3], letter_limit[0][0], letter_limit[0][1], letter_limit[0][2], letter_limit[0][3], letter_bottom);
             gotoxy(57, 32);
         
             if(lselect) {
@@ -158,21 +171,15 @@ int main(){
     fgets(letter_mainc, sizeof(letter_mainc), fp);
     letter_mainc[0]-=48;
     char letter_main[letter_mainc[0]][8][540];
-    char letter2_main[letter_mainc[0]][8][540/3*4];
     for(i=0;i<(int)letter_mainc[0];i++) {
         for(j=0;j<8;j++) {
             strcpy(letter_main[i][j] , "");
         }
     }
-    for(i=0;i<(int)letter_mainc[0];i++) {
-        for(j=0;j<8;j++) {
-            strcpy(letter2_main[i][j] , "");
-        }
-    }
     if(lselect) {                                                  //읽기시 출력 코드들                                    
         drawbody();
         drawmain();
-        beforerand();
+        beforerand(0);
         for(i=0;i<(int)letter_mainc[0];i++) {                                 //사전 읽고 디코딩 작업
             for(j=0;j<8;j++) {
                 fgets(letter_main[i][j], sizeof(letter_main[i][j]), fp);
@@ -209,14 +216,11 @@ int main(){
             }
         }
         fclose(fp);                                 //일단 다 읽어놓고 닫기
-        beforerand();
-        BCoding(1, letter_top, letter2_top, sizeof(letter_top));
-        BCoding(1, letter_bottom, letter2_bottom, sizeof(letter_bottom));
-        BCoding(1, letter_ps, letter2_ps, sizeof(letter_ps));
-        eCoding(1, letter2_top, sizeof(letter2_top), '\0');                     //문단 인코딩 작업
-        eCoding(1, letter2_bottom, sizeof(letter2_bottom), '\0');
-        eCoding(1, letter2_ps, sizeof(letter2_ps), '\0');
-        beforerand();
+        beforerand(1);
+        eCoding(1, letter_top, sizeof(letter_top), '\0');                     //문단 인코딩 작업
+        eCoding(1, letter_bottom, sizeof(letter_bottom), '\0');
+        eCoding(1, letter_ps, sizeof(letter_ps), '\0');
+        beforerand(0);
         for(i=0;i<(int)letter_mainc[0];i++) {                          //본문 인코딩 작업
             for(j=0;j<8;j++) {
                 eCoding(1, letter_main[i][j], sizeof(letter_main[i][j])-1, '\n');
@@ -232,9 +236,9 @@ int main(){
             letter_title[i+1]='\0';
         }
         fp2=fopen(letter_title, "w");                       //변환된 편지이름으로 출력
-        fprintf(fp2, "%s\n", letter2_top);
-        fprintf(fp2, "%s\n", letter2_bottom);
-        fprintf(fp2, "%s\n", letter2_ps);
+        fprintf(fp2, "%s\n", letter_top);
+        fprintf(fp2, "%s\n", letter_bottom);
+        fprintf(fp2, "%s\n", letter_ps);
         fprintf(fp2, "%d\n", letter_mainc[0]);
         for(i=0;i<(int)letter_mainc[0];i++) {                   //변환된 본문 출력
             for(j=0;j<8;j++) {
@@ -281,8 +285,9 @@ int main(){
 
 //----------------------------------------------------------------------------------------------------------
 
-void beforerand() {  //사전 시드 설정 작업
-    srand(letter_limit[0][0]+letter_limit[0][1]+letter_limit[0][2]+letter_limit[0][3]+letter_limit[1][0]+letter_limit[1][1]+letter_limit[1][2]+letter_limit[1][3]+'a'+'u'+'t'+'u'+'m'+'n');
+void beforerand(int a) {  //사전 시드 설정 작업, 0이면 시간 포함 시드 설정, 1이면 코드로 시드설정
+    if(!a) srand(letter_limit[0][0]+letter_limit[0][1]+letter_limit[0][2]+letter_limit[0][3]+letter_limit[1][0]+letter_limit[1][1]+letter_limit[1][2]+letter_limit[1][3]+'a'+'u'+'t'+'u'+'m'+'n');
+    else srand('a'+'u'+'t'+'u'+'m'+'n');
 }
 void gotoxy(int x,int y) { //gotoxy함수 
     COORD pos={x,y};
@@ -320,66 +325,6 @@ void eCoding(int a, char sentence[], int siz, char end_char) { //1일시 인코�
         }
     }
 }
-void BCoding(int a, char sentence[], char sentence2[], int siz) { //1일시 ->base64(변환) 0일시 ->utf-8/3(읽기)
-    int i, j;
-    for(i=0;i<siz/3*4+1&&!a;i++) {
-        sentence2[i]-=32;
-    } 
-    if(a) {
-        for(i=0, j=0;sentence[i]&&i<siz;i++) {
-            switch(i%3) {
-                case 0:
-                    sentence2[j]=sentence[i]>>2;
-                    sentence2[j+1]+=(sentence[i]%4)<<4;
-                    j++;
-                    break;
-                case 1:
-                    sentence2[j]+=sentence[i]/16;
-                    sentence2[j+1]+=(sentence[i]%16)<<2;
-                    j++;
-                    break;
-                case 2:
-                    sentence2[j]+=sentence[i]/64;
-                    sentence2[j+1]+=sentence[i]%64;
-                    j+=2;
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-    else {
-        for(j=0, i=0;sentence2[j]&&j<(siz/3*4);j++) {
-            switch(j%4) {
-                case 0:
-                    sentence[i]=(sentence2[j]%64)<<2;
-                    i++;
-                    break;
-                case 1:
-                    sentence[i-1]+=(sentence2[j]%64)/16;
-                    sentence[i]=(sentence2[j]%16)<<4;
-                    i++;
-                    break;
-                case 2:
-                    sentence[i-1]+=(sentence2[j]%64)/4;
-                    sentence[i]=(sentence2[j]%4)<<6;
-                    i++;
-                    break;
-                case 3:
-                    sentence[i-1]+=(sentence2[j])%64;
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-    for(i=0;i<siz/3*4+1&&a;i++) {
-        sentence2[i]+=32;
-    } 
-    for(i=0;i<siz/3*4+1&&!a;i++) {
-        sentence2[i]+=65;
-    } 
-}
 void drawmain() {    //기본 편지 양식 작성
     int i;
     for(i=0;i<46;i++) {
@@ -392,9 +337,10 @@ void drawmain() {    //기본 편지 양식 작성
 }
 int time_vaild() {                  //시간 검증 함수
     long long int letter_vaild[3];
-    int bre=1, t=letter_limit[i][1];
+    int bre=1;int t;
     for(i=0;i<3;i++) {
         letter_vaild[i] = letter_limit[i][0]*365*24+letter_limit[i][2]*24+letter_limit[i][3];
+        t=letter_limit[i][1];
         bre=1;
         while(bre) {
             switch(t) {
