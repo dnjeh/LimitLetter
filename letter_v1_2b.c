@@ -41,7 +41,7 @@ int main(){
             gotoxy(56, 32);
             printf("|                 편지 열기          편지로 변환               |");
             gotoxy(112, 33);
-            printf("v1.1+");
+            printf("v1.2b");
             if(lselect) gotoxy(71, 32);
             else gotoxy(90, 32);
             printf("√");
@@ -96,9 +96,9 @@ int main(){
             }
             if(lselect) {                                            //읽기 시 디코딩
                 beforerand();
-                eCoding(0, letter2_top, sizeof(letter2_top), '\0');
-                eCoding(0, letter2_bottom, sizeof(letter2_bottom), '\0');
-                eCoding(0, letter2_ps, sizeof(letter2_ps), '\0');
+                //eCoding(0, letter2_top, sizeof(letter2_top), '\0');
+                //eCoding(0, letter2_bottom, sizeof(letter2_bottom), '\0');
+                //eCoding(0, letter2_ps, sizeof(letter2_ps), '\0');
                 BCoding(0, letter_top, letter2_top, sizeof(letter_top));
                 BCoding(0, letter_bottom, letter2_bottom, sizeof(letter_bottom));
                 BCoding(0, letter_ps, letter2_ps, sizeof(letter_ps));
@@ -213,9 +213,9 @@ int main(){
         BCoding(1, letter_top, letter2_top, sizeof(letter_top));
         BCoding(1, letter_bottom, letter2_bottom, sizeof(letter_bottom));
         BCoding(1, letter_ps, letter2_ps, sizeof(letter_ps));
-        eCoding(1, letter2_top, sizeof(letter2_top), '\0');                     //문단 인코딩 작업
-        eCoding(1, letter2_bottom, sizeof(letter2_bottom), '\0');
-        eCoding(1, letter2_ps, sizeof(letter2_ps), '\0');
+        //eCoding(1, letter2_top, sizeof(letter2_top), '\0');                     //문단 인코딩 작업
+        //eCoding(1, letter2_bottom, sizeof(letter2_bottom), '\0');
+        //eCoding(1, letter2_ps, sizeof(letter2_ps), '\0');
         beforerand();
         for(i=0;i<(int)letter_mainc[0];i++) {                          //본문 인코딩 작업
             for(j=0;j<8;j++) {
@@ -320,64 +320,54 @@ void eCoding(int a, char sentence[], int siz, char end_char) { //1일시 인코�
         }
     }
 }
-void BCoding(int a, char sentence[], char sentence2[], int siz) { //1일시 ->base64(변환) 0일시 ->utf-8/3(읽기)
+void BCoding(int a, char sentence[], char sentenceB[], int siz) { //1일시 ->base64(변환) 0일시 ->utf-8/3(읽기)
     int i, j;
     for(i=0;i<siz/3*4+1&&!a;i++) {
-        sentence2[i]-=32;
+        sentenceB[i]-=32;
     } 
     if(a) {
         for(i=0, j=0;sentence[i]&&i<siz;i++) {
-            switch(i%3) {
-                case 0:
-                    sentence2[j]=sentence[i]>>2;
-                    sentence2[j+1]+=(sentence[i]%4)<<4;
-                    j++;
-                    break;
-                case 1:
-                    sentence2[j]+=sentence[i]/16;
-                    sentence2[j+1]+=(sentence[i]%16)<<2;
-                    j++;
-                    break;
-                case 2:
-                    sentence2[j]+=sentence[i]/64;
-                    sentence2[j+1]+=sentence[i]%64;
-                    j+=2;
-                    break;
-                default:
-                    break;
+            if(!(i%3)) {
+                sentenceB[j]=sentence[i]>>2;
+                sentenceB[j+1]+=(sentence[i]%4)<<4;
             }
+            else if(i%3==1) {
+                sentenceB[j]+=sentence[i]/16;
+                sentenceB[j+1]+=(sentence[i]%16)<<2;
+            }
+            else if(i%3==2) {
+                sentenceB[j]+=sentence[i]/64;
+                sentenceB[j+1]+=sentence[i]%64;
+                j++;
+            }
+            j++;
         }
     }
     else {
-        for(j=0, i=0;sentence2[j]&&j<(siz/3*4);j++) {
-            switch(j%4) {
-                case 0:
-                    sentence[i]=(sentence2[j]%64)<<2;
-                    i++;
-                    break;
-                case 1:
-                    sentence[i-1]+=(sentence2[j]%64)/16;
-                    sentence[i]=(sentence2[j]%16)<<4;
-                    i++;
-                    break;
-                case 2:
-                    sentence[i-1]+=(sentence2[j]%64)/4;
-                    sentence[i]=(sentence2[j]%4)<<6;
-                    i++;
-                    break;
-                case 3:
-                    sentence[i-1]+=(sentence2[j])%64;
-                    break;
-                default:
-                    break;
+        for(j=0, i=0;sentenceB[j]&&j<(siz/3*4);j++) {
+            if(!(j%4)) {
+                sentence[i]=(sentenceB[j]%64)<<2;
+                sentence[i-1]+=(sentenceB[j]%64)/16;
             }
+            if(j%4==1) {
+                sentence[i]=(sentenceB[j]%16)<<4;
+            }
+            if(j%4==2) {    
+                sentence[i-1]+=(sentenceB[j]%64)/4;
+                sentence[i]=(sentenceB[j]%4)<<6;
+            }
+            if(j%4==3) {    
+                sentence[i-1]+=(sentenceB[j])%64;
+                i--;
+            }
+            i++;
         }
     }
     for(i=0;i<siz/3*4+1&&a;i++) {
-        sentence2[i]+=32;
+        sentenceB[i]+=32;
     } 
     for(i=0;i<siz/3*4+1&&!a;i++) {
-        sentence2[i]+=65;
+        sentenceB[i]+=65;
     } 
 }
 void drawmain() {    //기본 편지 양식 작성
