@@ -5,7 +5,7 @@
 #include <windows.h>
 #include <string.h>
 int i, j, k, lselect=1; //1일 시 읽기(디코딩)
-int bre=0, bre2=0;
+int bre=0, bre2=0, con=0;
 int time_vaild();void gotoxy(int x, int y);void CursorView(); void RemoveEnter(char *sentence, int siz); void drawmain();void SSleep(int a_second); 
 void CursorView(int a);void drawbody();void beforerand();void drawletter();void drawoletter();void eCoding(int a, char sentence[], int siz, char end_char);
 int letter_limit[3][4] ={0,}; //유효기간 입력
@@ -21,7 +21,7 @@ int main(){
     char letter_title[31];
     char letter_mainc[3]; //문단 수
     char letter_index[100][40]={'\0',};
-    char path[5] = "*";
+    char path[8] = "*.let";
     char  *command;
     FILE *fp, *fp2;
     time_t t;
@@ -87,7 +87,7 @@ int main(){
             cnt=0;
             strcpy(letter_index[cnt], c_file.name);
             for(cnt=1;_findnexti64(hFile, &c_file)==0;cnt++){
-                strcpy(letter_index[i], c_file.name);
+                strcpy(letter_index[cnt], c_file.name);
             } 
             _findclose(hFile); // _findfirsti64(), _findnexti64()에 사용된 메모리를 반환
         }
@@ -95,11 +95,58 @@ int main(){
         //---------------------------------------------------------------------------------------------------
         
         drawoletter();
+        i=0;
         while(!bre) {
-            for(i=13;i<16;i++) {
-                gotoxy(56, 15+i);
+            con=0;
+            for(j=13;j<18;j++) {
+                gotoxy(56,19+j);
                 printf("|                                                              |");
             }
+            for(j=(i/18)*18;j<(((i/18)+1)*18)&&j<cnt;j++) {
+                if(i==cnt/18*18&&i) {
+                    drawoletter();
+                    for(k=13;k<18;k++) {
+                        gotoxy(56,19+k);
+                        printf("|                                                              |");
+                    }
+                }
+                if(!((j/9)%2)) {
+                    gotoxy(63, 14+j%9);
+                    printf("  %-22s", letter_index[j]);
+                }
+                else {
+                    gotoxy(87, 14+j%9);
+                    if(j%2) printf("| ");
+                    else printf(" |");
+                    printf("  %-22s", letter_index[j]);
+                }
+                if(i==j) {
+                    if(!((j/9)%2)) gotoxy(63, 14+j%9);
+                    else gotoxy(89, 14+j%9);
+                    printf("√");
+                }
+                gotoxy(85, 29);
+                printf("- %02d -", j/18+1);
+            }
+            gotoxy(57, 34);
+            printf("        [이 파일이 곧 편지라면 space bar를 눌러주세요]     ");
+            switch(getch()) {
+                case ' ':
+                    con=1;
+                    break;
+                case 'd':
+                    if(i+1<cnt) i++;
+                    break;
+                case 'a':
+                    if(i-1>=0) i--;
+                    break;
+                default:
+                    break;
+            }
+            if(!con) continue;
+            gotoxy(57, 34);
+            printf("                                                          ");
+            strcpy(letter_title, letter_index[i]);
             fp=fopen(letter_title, "r");                       //편지 읽기 
             fgets( letter_top, sizeof(letter_top), fp);
             fgets( letter_bottom, sizeof(letter_bottom), fp);
@@ -113,41 +160,42 @@ int main(){
                 eCoding(0, letter_bottom, sizeof(letter_bottom), '\0');
                 eCoding(0, letter_ps, sizeof(letter_ps), '\0');
             }
-            if(letter_limit[0][0]==0) {
-                for(i=0;i<20;i++) {
-                    switch(i%10) {
-                    case 0: j=1000; case 1: case 2: case 3:
-                        letter_limit[i/10][0]+=(letter_ps[i]-48)*j;
-                        j/=10;
-                        break;
-                    case 4: j=10; case 5:
-                        letter_limit[i/10][1]+=(letter_ps[i]-48)*j;
-                        j/=10;
-                        break;
-                    case 6: j=10; case 7:
-                        letter_limit[i/10][2]+=(letter_ps[i]-48)*j;
-                        j/=10;
-                        break;
-                    case 8: j=10; case 9:
-                        letter_limit[i/10][3]+=(letter_ps[i]-48)*j;
-                        j/=10;
-                        break;
-                    default:
-                        break;
-                    }
+            for(k=0;k<8;k++) {
+                letter_limit[k/4][k%4]=0;
+            }
+            for(k=0;k<20;k++) {
+                switch(k%10) {
+                case 0: j=1000; case 1: case 2: case 3:
+                    letter_limit[k/10][0]+=(letter_ps[k]-48)*j;
+                    j/=10;
+                    break;
+                case 4: j=10; case 5:
+                    letter_limit[k/10][1]+=(letter_ps[k]-48)*j;
+                    j/=10;
+                    break;
+                case 6: j=10; case 7:
+                    letter_limit[k/10][2]+=(letter_ps[k]-48)*j;
+                    j/=10;
+                    break;
+                case 8: j=10; case 9:
+                    letter_limit[k/10][3]+=(letter_ps[k]-48)*j;
+                    j/=10;
+                    break;
+                default:
+                    break;
                 }
             }
             if(time_vaild()) {
-                gotoxy(57, 29);                                                //단계 진입 전 안내문구
+                gotoxy(57, 32);                                                //단계 진입 전 안내문구
                 printf("     %s에게                  ", letter_top);
-                gotoxy(57, 30);
+                gotoxy(57, 33);
                 printf("      %d.%02d.%02d/%02d ~ %d.%02d.%02d/%02d, %s 가", letter_limit[1][0], letter_limit[1][1], letter_limit[1][2], letter_limit[1][3], letter_limit[0][0], letter_limit[0][1], letter_limit[0][2], letter_limit[0][3], letter_bottom);
-                gotoxy(57, 32);
+                gotoxy(57, 35);
                 if(lselect) {
-                    printf("         [읽기를 시작하시려면 space bar를 눌러주세요]");
+                    printf("         [읽기를 시작하시려면 space bar를 눌러주세요]     ");
                 }
                 else {
-                    printf("         [변환을 시작하시려면 space bar를 눌러주세요]");
+                    printf("         [변환을 시작하시려면 space bar를 눌러주세요]     ");
                 }
                 switch(getch()) {
                     case ' ':
@@ -156,14 +204,14 @@ int main(){
                     case 'd':
                         if(i+1<cnt) i++;
                     case 'a':
-                        if(i-1>0) i--;
+                        if(i-1>=0) i--;
                     default:
                         break;
                 }
             }
             else {
-                gotoxy(57, 32);
-                printf("   [유효기간 내의 편지가 아닙니다 (자동으로 넘겨집니다)]");
+                gotoxy(57, 35);
+                printf("    [유효기간 내의 편지가 아닙니다 (자동으로 넘겨집니다)]");
                 SSleep(3);
                 if(i+1<cnt) i++;
                 else i--;
@@ -255,7 +303,11 @@ int main(){
                 fprintf(fp, "%s", letter_main[i][j]);
             }
         }
-        gotoxy(57, 32);
+        for(j=13;j<18;j++) {
+            gotoxy(56,19+j);
+            printf("|                                                              |");
+        }
+        gotoxy(57, 35);
         printf("                 편지로 변환이 완료되었습니다!             ");
         fclose(fp2);
     }
@@ -376,6 +428,7 @@ void drawletter() {   //편지 모양 쓰기
     }
 }
 void drawoletter() {   //편지 모양 쓰기
+    int i;
     for(i=0;i<30;i++) {
         gotoxy(56, 9+i);
         switch(i) {
@@ -402,10 +455,10 @@ void drawoletter() {   //편지 모양 쓰기
             case 20: printf("|                       _              _                       |"); break;
             case 21: printf("|                          __________                          |"); break;
             case 22: printf("|                                                              |"); break;            
-            case 23: printf("|                      _o   _  _  _|_  _   ,_                  |"); break;
-            case 24: printf("|               |  |  | |  / |/ |  |  |/  /  |                 |"); break;
-            case 25: printf("|                \\/ \\/  |_/  |  |_/|_/|__/   |_/               |"); break;
-            case 26: printf("|                            b e t a                           |"); break;
+            case 23: printf("|                                                              |"); break;
+            case 24: printf("|                                                              |"); break;
+            case 25: printf("|                                                              |"); break;
+            case 26: printf("|                                                              |"); break;
             case 27: printf("|                                                              |"); break;
             case 28: printf("|                                                              |"); break;
             case 29: printf(" -------------------------------------------------------------- "); break;
