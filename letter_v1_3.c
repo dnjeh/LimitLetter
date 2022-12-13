@@ -297,7 +297,7 @@ int main(){
         fprintf(fp2, "%s\n", letter_top);
         fprintf(fp2, "%s\n", letter_bottom);
         fprintf(fp2, "%s\n", letter_ps);
-        fprintf(fp2, "%d\n", letter_mainc[0]);
+        fprintf(fp2, "%c\n", letter_mainc[0]+48);
         for(i=0;i<(int)letter_mainc[0];i++) {                   //변환된 본문 출력
             for(j=0;j<8;j++) {
                 fprintf(fp, "%s", letter_main[i][j]);
