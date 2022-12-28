@@ -4,6 +4,7 @@
 #include <time.h>    //64 20
 #include <windows.h>
 #include <string.h>
+#include <errno.h>
 int i, j, k, lselect=1; //1일 시 읽기(디코딩)
 int bre=0, bre2=0, con=0;
 int time_vaild();void gotoxy(int x, int y);void CursorView(); void RemoveEnter(char *sentence, int siz); void drawmain();void SSleep(int a_second); 
