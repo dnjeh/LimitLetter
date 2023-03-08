@@ -1,21 +1,21 @@
-#include "lletterb.h" //177 50 //94 ** //64 20
+#include "lletterb.h" //177 50 //94 ** //64 20 //⚙️
 
+int bre=0, bre2=0, con=0;
+int i, j, k, lselect=1, cnt=0;  //1일 시 읽기(디코딩)
+char  *command;
+FILE *fp, *fp2; time_t t; intptr_t hFile;
+struct tm* monthandday; struct _finddatai64_t c_file;
+char l_tri[3][61], l_tit[101]; //처음, 마지막, 여담(추신)
+char l_mc[3], l_ind[100][40]={'\0',}, path[8] = "*.let";
+int l_goto[4][2]={{0, 0}, {71, 32}, {90, 32}, {110, 33}};
+
+int home();
 int main(){
     system("mode con cols=177 lines=50");        //사전 설정 문단
     system("chcp 65001");
     system("cls");
-    int i, j, k, lselect=1, cnt=0;  //1일 시 읽기(디코딩)
-    int bre=0, bre2=0, con=0;
-    char l_tri[3][61], l_tit[101]; //처음, 마지막, 여담(추신)
-    char l_mc[3], l_ind[100][40]={'\0',}, path[8] = "*.let";
-    char  *command;
-    FILE *fp, *fp2; time_t t=time(NULL); intptr_t hFile;
-    struct tm* monthandday; struct _finddatai64_t c_file;
-    monthandday = localtime(&t);
-    l_lim[2][0] = monthandday->tm_year + 1900;
-    l_lim[2][1] = monthandday->tm_mon + 1;
-    l_lim[2][2] = monthandday->tm_mday;
-    l_lim[2][3] = monthandday->tm_hour;
+    t=time(NULL);
+    timeland();
 
     //-----------------------------------------메인화면---------------------------------------------------
     home:
@@ -25,16 +25,19 @@ int main(){
         drawletter();
         while(!bre) {                //메인화면
             gotoxy(56, 32);
-            printf("|                 편지 열기          편지로 변환               |");
+            printf("|                 편지 열기            편지 작성               |");
             gotoxy(113, 33);
-            printf("v2.0+");
-            if(lselect) gotoxy(71, 32);
-            else gotoxy(90, 32);
+            printf("v2.0");
+            gotoxy(l_goto[lselect][0], l_goto[lselect][1]);
             printf("√");
             switch(getch()) {
-                case 'd': case 'a':
-                    if(lselect==0) lselect=1;
-                    else lselect=0;
+                case 'd': 
+                    lselect++;
+                    if(lselect>3) lselect=0;
+                    break;
+                case 'a':
+                    lselect--;
+                    if(lselect<0) lselect=3;
                     break;
                 case ' ':
                     bre=1;
@@ -52,7 +55,7 @@ int main(){
             gotoxy(57, 32);
             switch(errno) {
                 case ENOENT:
-                    printf("현재 동작에 맞는 파일을 찾을 수 없습니다"); break;
+                    printf("|      현재 동작에 맞는 파일을 찾을 수 없습니다      |"); break;
                 case EINVAL:
                     printf("편지 형식의 파일을 찾을 수 없습니다 (임의로 번경하셨나요?)\n"); _findclose(hFile); break;
                 case ENOMEM:
@@ -260,3 +263,35 @@ int main(){
     SSleep(3);
     goto home;
 }   
+
+int home() {
+    CursorView(0);  
+    timeland();       
+    drawbody();
+    drawletter();
+    while(bre){
+        gotoxy(56, 32);
+        printf("|                 편지 열기            편지 작성               |");
+        gotoxy(113, 33);
+        printf("v2.0");
+        gotoxy(l_goto[lselect][0], l_goto[lselect][1]);
+        printf("√");
+        switch(getch()) {
+            case 'd': 
+                lselect++;
+                if(lselect>3) lselect=0;
+                break;
+            case 'a':
+                lselect--;
+                if(lselect<0) lselect=3;
+                break;
+            case ' ':
+                bre=1;
+                break;
+            default:
+                break;
+        }
+    }
+    bre=0;                            
+    return lselect;
+}

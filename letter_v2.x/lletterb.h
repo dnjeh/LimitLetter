@@ -50,6 +50,16 @@ void drawmain() {    //기본 편지 양식 작성
         }
     }
 }
+
+void timeland() {
+    t=time(NULL);
+    monthandday = localtime(&t);
+    l_lim[2][0] = monthandday->tm_year + 1900;
+    l_lim[2][1] = monthandday->tm_mon + 1;
+    l_lim[2][2] = monthandday->tm_mday;
+    l_lim[2][3] = monthandday->tm_hour;       
+}
+
 int time_vaild() {                  //시간 검증 함수
     long long int l_vai[3];
     int bre=1, _t, _i;
