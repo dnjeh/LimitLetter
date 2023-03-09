@@ -121,8 +121,8 @@ void drawletter() {   //편지 모양 쓰기
             case 12: printf("|                 ,    _   ,_   o   _  _    __,                |"); break;
             case 13: printf("|                /___|/ \\_/  |  |  / |/ |  /  |                |"); break;
             case 14: printf("|                   /|__/    |_/|_/  |  |_/\\_/|/               |"); break;
-            case 15: printf("|                   (|       ✉ ⥊ ✉         (|                |"); break;
-            case 16: printf("|                                                              |"); break;            
+            case 15: printf("|                   (|                       (|                |"); break;
+            case 16: printf("|                            ✉ ⇋  ✉                          |"); break;            
             case 17: printf("|                                                              |"); break;
             case 18: printf("|                                                              |"); break;
             case 19: printf(" -------------------------------------------------------------- "); break;

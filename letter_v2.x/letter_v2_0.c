@@ -6,7 +6,7 @@ char  *command;
 FILE *fp, *fp2; intptr_t hFile; struct _finddatai64_t c_file;
 char l_tri[3][61], l_tit[101]; //처음, 마지막, 여담(추신)
 char l_mc[3], l_ind[100][40]={'\0',}, path[8] = "*.let";
-int l_goto[5][2]={{58, 33}, {62, 33}, {71, 32}, {92, 32}, {111, 33}};
+int l_goto[5][2]={{59, 32}, {62, 32}, {71, 32}, {92, 32}, {111, 33}};
 int home(); int lsearch(); int lread(); int lwrite();
 
 int main(){
@@ -39,9 +39,9 @@ int home() {
         gotoxy(56, 32);
         printf("|                 편지 열기            편지 작성               |");
         gotoxy(56, 33);
-        printf("|   ⚙  [?]                                               v2.0 |");
+        printf("|  ⚙[?]                                                  v2.0 |");
         gotoxy(l_goto[lselect][0], l_goto[lselect][1]);
-        printf("√");
+        printf(lselect<2?"v":"√");
         switch(getch()) {
             case 'd': 
                 lselect++;
