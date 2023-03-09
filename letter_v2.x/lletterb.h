@@ -6,6 +6,7 @@
 #include <string.h>
 #include <errno.h>
 int l_lim[3][4] ={0,}; //유효기간 입력
+time_t t; struct tm* monthandday;
 void beforerand(int _t) {  //사전 시드 설정 작업, 0이면 시간 포함 시드 설정, 1이면 코드로 시드설정
     if(!_t) srand(l_lim[0][0]+l_lim[0][1]+l_lim[0][2]+l_lim[0][3]+l_lim[1][0]+l_lim[1][1]+l_lim[1][2]+l_lim[1][3]+'a'+'u'+'t'+'u'+'m'+'n');
     else srand('w'+'i'+'n'+'t'+'e'+'r');
@@ -117,11 +118,11 @@ void drawletter() {   //편지 모양 쓰기
             case 9:  printf("|                   _                      _                   |"); break;
             case 10: printf("|                       _              _                       |"); break;
             case 11: printf("|                          __________                          |"); break;
-            case 12: printf("|                                                              |"); break;            
-            case 13: printf("|                      _o   _  _  _|_  _   ,_                  |"); break;
-            case 14: printf("|               |  |  | |  / |/ |  |  |/  /  |                 |"); break;
-            case 15: printf("|                \\/ \\/  |_/  |  |_/|_/|__/   |_/               |"); break;
-            case 16: printf("|                            b e t a                           |"); break;
+            case 12: printf("|                 ,    _   ,_   o   _  _    __,                |"); break;
+            case 13: printf("|                /___|/ \\_/  |  |  / |/ |  /  |                |"); break;
+            case 14: printf("|                   /|__/    |_/|_/  |  |_/\\_/|/               |"); break;
+            case 15: printf("|                   (|       ✉ ⥊ ✉         (|                |"); break;
+            case 16: printf("|                                                              |"); break;            
             case 17: printf("|                                                              |"); break;
             case 18: printf("|                                                              |"); break;
             case 19: printf(" -------------------------------------------------------------- "); break;
