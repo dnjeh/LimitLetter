@@ -69,13 +69,13 @@ int lsearch() {
         gotoxy(57, 32);
         switch(errno) {
             case ENOENT:
-                printf("|      현재 동작에 맞는 파일을 찾을 수 없습니다      |"); break;
+                printf("|      현재 동작에 맞는 파일을 찾을 수 없습니다      |"); _findclose(hFile); break;
             case EINVAL:
-                printf("편지 형식의 파일을 찾을 수 없습니다 (임의로 번경하셨나요?)\n"); _findclose(hFile); break;
+                printf("|             잘못된 파일 경로입니다             |"); _findclose(hFile); break;
             case ENOMEM:
-                printf("파일 이름이 너무 깁니다\n"); _findclose(hFile); break;
+                printf("|       메모리가 부족하거나 이름이 너무 깁니다       |"); _findclose(hFile); break;
             default:
-                printf("알 수 없는 오류입니다.\n"); _findclose(hFile); break;
+                printf("|              알 수 없는 에러입니다              |"); _findclose(hFile); break;
             }
             SSleep(3);
             return 0;
