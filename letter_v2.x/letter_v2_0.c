@@ -118,7 +118,8 @@ int lsearch() {
             printf("- %02d -", j/18+1);
         }
         gotoxy(57, 34);
-        printf("        [이 파일이 곧 편지라면 space bar를 눌러주세요]     ");
+        if(lselect==2) printf("        [이 파일이 곧 편지라면 space bar를 눌러주세요]     ");
+        else printf("       [이 파일이 곧 본문이라면 space bar를 눌러주세요]    ");
         switch(getch()) {
             case ' ':
                 con=1;
@@ -133,16 +134,15 @@ int lsearch() {
                 break;
         }
         if(!con) continue;
-
         gotoxy(57, 34);
         printf("                                                          ");
         strcpy(l_tit, l_ind[i]);
-        fp=fopen(l_tit, "r");                       //편지 읽기 
-        for(j=0;j<3;j++) {
-            fgets(l_tri[j], sizeof(l_tri[j]), fp);
-            RemoveEnter(l_tri[j], sizeof(l_tri[j]));
-        }
-        if(lselect==2) {                                            //읽기 시 디코딩
+        if(lselect==2) {                           //읽을 때
+            fp=fopen(l_tit, "r");                       
+            for(j=0;j<3;j++) {
+                fgets(l_tri[j], sizeof(l_tri[j]), fp);
+                RemoveEnter(l_tri[j], sizeof(l_tri[j]));
+            }
             beforerand(1);
             for(j=0;j<3;j++) eCoding(0, l_tri[j], sizeof(l_tri[j]), '\0');
         }
@@ -197,7 +197,7 @@ int lsearch() {
         }
         else {
             gotoxy(57, 35);
-            printf("               [유효기간 내의 편지가 아닙니다]");
+            printf("               [유효기간 내 의 편지가 아닙니다]               ");
             fclose(fp);
             SSleep(3);
             return 0;
