@@ -41,20 +41,29 @@ void eCoding(int _t, char sentence[], int siz, char end_char) { //1일시 인코
         sentence[_i]=sentence[_i]-rand()%3;
     }
 }
-void drawmain() {    //기본 편지 양식 작성
+void drawmain(int _f) {    //기본 편지 양식 작성
     int _i;
     for(_i=0;_i<46;_i++) {
         gotoxy(42, 1+_i);
         switch(_i) {
-            case 0: case 45: printf(" ____________________________________________________________________________________________ "); break;
+            case 0: case 45: 
+                if((_f/10&&!_i)||(_f%10&&_i==45)) printf(" ____________________________________________________________________________________________ "); 
+                else printf(":                                                                                            :"); 
+                break;
             default:  printf("| %90s |", " "); break;
         }
     }
 }
 
-void timeland() {
+void timeland(int _f) {
     t=time(NULL);
     monthandday = localtime(&t);
+    if(_f) {
+        l_lim[1][0] = monthandday->tm_year + 1900; l_lim[0][0] = monthandday->tm_year + 1900;
+        l_lim[1][1] = monthandday->tm_mon + 1;     l_lim[0][1] = monthandday->tm_mon + 1;
+        l_lim[1][2] = monthandday->tm_mday;        l_lim[0][2] = monthandday->tm_mday;
+        l_lim[1][3] = monthandday->tm_hour;        l_lim[0][3] = monthandday->tm_hour;       
+    }
     l_lim[2][0] = monthandday->tm_year + 1900;
     l_lim[2][1] = monthandday->tm_mon + 1;
     l_lim[2][2] = monthandday->tm_mday;

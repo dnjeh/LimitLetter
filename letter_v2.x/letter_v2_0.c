@@ -1,24 +1,23 @@
 #include "lletterb.h" //177 50 //94 ** //64 20 //⚙️
 
-int con=0;
+int con=0, l_mc;
 int i, j, k, lselect=2, cnt=0;  //1일 시 읽기(디코딩)
 char  *command;
 FILE *fp, *fp2; intptr_t hFile; struct _finddatai64_t c_file;
 char l_tri[3][61], l_tit[101]; //처음, 마지막, 여담(추신)
-char l_mc[3], l_ind[100][40]={'\0',}, path[8] = "*.let";
-int l_goto[5][2]={{59, 32}, {62, 32}, {71, 32}, {92, 32}, {111, 33}};
-int home(); int lsearch(); int lread(); int lwrite();
+char l_ind[100][40]={'\0',}, path[8] = "*.let";
+int home(); int lsearch(int _f); int lread(int _f); int lwrite();
 
 int main(){
     system("mode con cols=177 lines=50");        //사전 설정 문단
     system("chcp 65001");
     system("cls");
     t=time(NULL);
-    timeland();
+    timeland(0);
     while(1) {
         switch(home()) {
         case 2:
-            lread();
+            lread(1);
             break;
         case 3:
             lwrite();
@@ -30,8 +29,9 @@ int main(){
 }   
 /*********************************************************************************************************************************/
 int home() {
+    int l_goto[5][2]={{59, 32}, {62, 32}, {71, 32}, {92, 32}, {111, 33}};
     CursorView(0);  
-    timeland();       
+    timeland(0);       
     drawbody();
     drawletter();
     int bre=1;
@@ -61,7 +61,7 @@ int home() {
     return lselect;
 }
 /*********************************************************************************************************************************/
-int lsearch() {
+int lsearch(int _f) {
     //--------------------------------------------탐색문단-----------------------------------------------------                 
     if(lselect==2) strcpy(path, "*_");    //편지 검색&적재
     else if(lselect==3) strcpy(path, "*");
@@ -137,64 +137,57 @@ int lsearch() {
         gotoxy(57, 34);
         printf("                                                          ");
         strcpy(l_tit, l_ind[i]);
-        if(lselect==2) {                           //읽을 때
-            fp=fopen(l_tit, "r");                       
+        fp=fopen(l_tit, "r");           
+        for(k=0;k<8;k++) l_lim[k/4][k%4]=0;   
+        if(lselect==2) {                           //읽을 때         
             for(j=0;j<3;j++) {
                 fgets(l_tri[j], sizeof(l_tri[j]), fp);
                 RemoveEnter(l_tri[j], sizeof(l_tri[j]));
             }
             beforerand(1);
-            for(j=0;j<3;j++) eCoding(0, l_tri[j], sizeof(l_tri[j]), '\0');
-        }
-        for(k=0;k<8;k++) {
-            l_lim[k/4][k%4]=0;
-        }
-        for(k=0;k<20;k++) {
-            switch(k%10) {
-            case 0: j=1000; case 1: case 2: case 3:
-                l_lim[k/10][0]+=(l_tri[2][k]-48)*j;
-                j/=10;
-                break;
-            case 4: j=10; case 5:
-                l_lim[k/10][1]+=(l_tri[2][k]-48)*j;
-                j/=10;
-                break;
-            case 6: j=10; case 7:
-                l_lim[k/10][2]+=(l_tri[2][k]-48)*j;
-                j/=10;
-                break;
-            case 8: j=10; case 9:
-                l_lim[k/10][3]+=(l_tri[2][k]-48)*j;
-                j/=10;
-                break;
-            default:
-                break;
+            if(!_f) for(j=0;j<3;j++) eCoding(0, l_tri[j], sizeof(l_tri[j]), '\0');
+            for(k=0;k<20;k++) {
+                switch(k%10) {
+                case 0: j=1000; case 1: case 2: case 3:
+                    l_lim[k/10][0]+=(l_tri[2][k]-48)*j;
+                    j/=10;
+                    break;
+                case 4: j=10; case 5:
+                    l_lim[k/10][1]+=(l_tri[2][k]-48)*j;
+                    j/=10;
+                    break;
+                case 6: j=10; case 7:
+                    l_lim[k/10][2]+=(l_tri[2][k]-48)*j;
+                    j/=10;
+                    break;
+                case 8: j=10; case 9:
+                    l_lim[k/10][3]+=(l_tri[2][k]-48)*j;
+                    j/=10;
+                    break;
+                default:
+                    break;
+                }
             }
         }
-        if(time_vaild()) {
+        else {
+            fgets(l_tri[0], sizeof(l_tri[0]), fp);
+            RemoveEnter(l_tri[0], sizeof(l_tri[0]));
+        }
+        timeland(0);
+        if(lselect==2&&time_vaild()) {
             gotoxy(57, 32);                                                //단계 진입 전 안내문구
             printf("     %s에게                  ", l_tri[0]);
             gotoxy(57, 33);
             printf("      %d.%02d.%02d/%02d ~ %d.%02d.%02d/%02d, %s 가", l_lim[1][0], l_lim[1][1], l_lim[1][2], l_lim[1][3], l_lim[0][0], l_lim[0][1], l_lim[0][2], l_lim[0][3], l_tri[1]);
             gotoxy(57, 35);
-            if(lselect==1) printf("         [읽기를 시작하시려면 space bar를 눌러주세요]     ");
-            else printf("         [작성을 시작하시려면 space bar를 눌러주세요]     ");
-            switch(getch()) {
-                case ' ':
-                    CursorView(0);
-                    fgets(l_mc, sizeof(l_mc), fp);
-                    l_mc[0]-=48; //작업 전 문단 수 읽기, 그에 따른 문단 배열 생성&초기화
-                    return 1;
-                    break;
-                case 'd':
-                    if(i+1<cnt) i++;
-                case 'a':
-                    if(i-1>=0) i--;
-                    fclose(fp);
-                default:
-                    break;
-            }
+            printf("         [읽기를 시작하시려면 space bar를 눌러주세요]     ");
         }
+        else if(lselect==3) { //단계 진입 전 안내문구
+            gotoxy(57, 33);
+            printf(" %s(으)로 시작하는 편지", l_tri[0]);
+            gotoxy(57, 35);
+            printf("         [작성을 시작하시려면 space bar를 눌러주세요]     ");
+        } 
         else {
             gotoxy(57, 35);
             printf("               [유효기간 내 의 편지가 아닙니다]               ");
@@ -202,61 +195,133 @@ int lsearch() {
             SSleep(3);
             return 0;
         }
+        switch(getch()) {
+                case ' ':
+                    CursorView(0);
+                    return 1;
+                    break;
+                case 'd':
+                    if(i+1<cnt) i++;
+                    fclose(fp);
+                    break;
+                case 'a':
+                    if(i-1>=0) i--;
+                    fclose(fp);
+                    break;
+                default:
+                    break;
+            }
     }
 }
 /*********************************************************************************************************************************/
-int lread() {
-    if(!lsearch()) return 0;
-    char l_m[l_mc[0]][8][540];
-    for(i=0;i<(int)l_mc[0];i++) for(j=0;j<8;j++) {
-        strcpy(l_m[i][j] , "");
+int lread(int _f) {
+    if(!lsearch(_f)) return 0;
+    char _t;
+    fscanf(fp, "%d%c", &l_mc, &_t); //작업 전 문단 수 읽기, 그에 따른 문단 배열 생성&초기화
+    char l_m[l_mc][540];
+    for(i=0;i<l_mc;i++) {
+        strcpy(l_m[i] , "");
     }                          
     drawbody();
-    drawmain();
+    drawmain(l_mc<=40?11:10);
     beforerand(0);
-    for(i=0;i<(int)l_mc[0];i++) for(j=0;j<8;j++) {
-        fgets(l_m[i][j], sizeof(l_m[i][j]), fp); //사전 읽고 디코딩 작업
-        eCoding(0, l_m[i][j], sizeof(l_m[i][j]), '\n');
+    for(i=0;i<l_mc;i++) {
+        fgets(l_m[i], sizeof(l_m[i]), fp); //사전 읽고 디코딩 작업
+        if(!_f) eCoding(0, l_m[i], sizeof(l_m[i]), '\n');
     }
     fclose(fp);                                                     //파일 읽기 종료
     gotoxy(44, 3);
     printf(" %s 에게                                            ", l_tri[0]);
-    for(k=0;k<(int)l_mc[0]/4+((int)l_mc[0]%4?1:0);k++) { 
-        for(i=0;i<4&&((k*4+i)<(int)l_mc[0]);i++) {                              //페이지, 문단별 출력
-            CursorView(0);
-            gotoxy(44+40, 45);
-            printf(" %02d / %02d", k*4+i+1, l_mc[0]);
-            for(j=0;j<8;j++) {
-                gotoxy(44, 5+i*9+j);
-                printf("%s", l_m[k*4+i][j]);
+    for(k=0;k<l_mc/40+(l_mc%40?1:0);k++) { 
+        CursorView(0);
+        if(k) drawmain(k+1==(l_mc/40+(l_mc%40?1:0))?1:0);
+        gotoxy(44+1+1, 46);
+        printf("|%02d / %02d|", k+1, l_mc/40+(l_mc%40?1:0));
+        for(i=0;i<40&&((k*40+i)<l_mc);i++) {                              //페이지, 문단별 출력
+            gotoxy(44, 5+i);
+            if(l_m[i][0]=='\n'&&!l_m[i][1]) {
+                gotoxy(44, 5+i);
+                CursorView(1);
+                getch();
+                CursorView(0);
+            }
+            else {
+                printf("%s", l_m[k*40+i]);
                 SSleep(1);
             }
-            gotoxy(44, 6+i*9+j);
-            CursorView(1);
-            getch();
         }
-        CursorView(0);
-        if(k+1<(int)l_mc[0]/4+((int)l_mc[0]%4?1:0)) drawmain();
+        gotoxy(44, 5+i);
+        CursorView(1);
+        getch();
     }
-    gotoxy(44, 42);
-    printf("                                                         %d.%02d.%02d, %s 가     ", l_lim[2][0], l_lim[2][1], l_lim[2][2], l_tri[1]);
+    gotoxy(54, 45);
+    printf("                                               %d.%02d.%02d, %s 가     ", l_lim[2][0], l_lim[2][1], l_lim[2][2], l_tri[1]);
     CursorView(0);
     SSleep(3);
     return 0;
 }
 /*********************************************************************************************************************************/
 int lwrite() {
-    if(!lsearch()) return 0;
-    char l_m[l_mc[0]][8][540];
-    for(i=0;i<(int)l_mc[0];i++) for(j=0;j<8;j++) {
-        fgets(l_m[i][j], sizeof(l_m[i][j]), fp); 
+    char _t[5];
+    if(!lsearch(0)) return 0;
+    fclose(fp);
+    fp=fopen(l_tit, "r");
+    for(l_mc=0;fgets(_t, sizeof(_t), fp)!=NULL;l_mc++);
+    char l_m[--l_mc][540];
+    fclose(fp);
+    fp=fopen(l_tit, "r");
+    for(i=0;i<l_mc;i++) {
+        fgets(l_m[i], sizeof(l_m[i]), fp); 
     }
     fclose(fp);                                 //일단 다 읽어놓고 닫기
+    int l_goto[6][2] = {{62, 14}, {62, 16+1}, {62, 18+1}, {62, 19+1}, {61, 32}, {90, 34}};
+    char *l_stit[6]={"편지의 이름", "편지의 길이", "유효 시각", "", "보내는 이", "받는 이"};
+    char *l_sexp[6]={"파일의 이름으로서 보여지는 편지의 이름입니다. 작성중엔 지울 수 없습니다.", 
+                     "본문의 길이입니다.", 
+                     "편지를 열람 가능해지는 시각 입니다.", 
+                     "편지를 열람 할 수 없어지는 시각 입니다.", 
+                     "보내는 이, 당신을 가르키는 문자열입니다. 작성 중엔 지울 수 없습니다.", 
+                     "받는 이를 가르키는 문자열입니다. 작성 중엔 지울 수 없습니다."};
+    int bre=1, wl_sel=0;   
+    drawoletter();
+    timeland(1);
+    while(bre) {
+        for(i=0;i<6;i++) {
+            gotoxy(l_goto[i][0]-2, l_goto[i][1]);
+            printf("%c %s %c", wl_sel==i?(wl_sel==1?'X':'>'):' ', l_stit[i], i==3||i==0?'\0':':');
+            switch(i) { 
+                case 0: 
+                    gotoxy(l_goto[i][0]-2+3, l_goto[i][1]+1);
+                    printf(": %s", l_tit);  
+                    break;
+                case 1: printf(" %d", l_mc); break;
+                case 2: printf(" %4d.%02d.%02d/%02d", l_lim[1][0], l_lim[1][1], l_lim[1][2], l_lim[1][3]); break;
+                case 3: printf("         ~ %4d.%02d.%02d/%02d", l_lim[0][0], l_lim[0][1], l_lim[0][2], l_lim[0][3]); break;
+                case 4: printf(" %s", l_tri[0]);  break;
+                case 5: printf(" %s", l_tri[1]);  break;
+            }
+        }
+        switch(getch()) {
+            case 'd': 
+                wl_sel++;
+                if(wl_sel>5) wl_sel=0;
+                break;
+            case 'a':
+                wl_sel--;
+                if(wl_sel<0) wl_sel=5;
+                break;
+            case 'w': case 's':
+                bre=0;
+                break;
+            default:
+                break;
+        }
+    }
     beforerand(1);
     for(i=0;i<3;i++) eCoding(1, l_tri[i], sizeof(l_tri[i]), '\0');                     //문단 인코딩 작업
     beforerand(0);
-    for(i=0;i<(int)l_mc[0];i++) for(j=0;j<8;j++) {                //본문 인코딩 작업
-        eCoding(1, l_m[i][j], sizeof(l_m[i][j])-1, '\n');
+    for(i=0;i<l_mc;i++) {                //본문 인코딩 작업
+        eCoding(1, l_m[i], sizeof(l_m[i])-1, '\n');
     }
     for(i=0;l_tit[i]!='\0';i++); //글자수 세기
     if(i<=59) {
@@ -265,9 +330,9 @@ int lwrite() {
     }
     fp2=fopen(l_tit, "w");                       //변환된 편지이름으로 출력
     for(i=0;i<3;i++) fprintf(fp2, "%s\n", l_tri[i]);
-    fprintf(fp2, "%c\n", l_mc[0]+48);
-    for(i=0;i<(int)l_mc[0];i++) for(j=0;j<8;j++) {  //변환된 본문 출력
-        fprintf(fp, "%s", l_m[i][j]);
+    fprintf(fp2, "%d\n", l_mc);
+    for(i=0;i<l_mc;i++) {  //변환된 본문 출력
+        fprintf(fp, "%s", l_m[i]);
     }
     drawnletter();
     gotoxy(57, 35);
