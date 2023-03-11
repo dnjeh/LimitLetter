@@ -9,7 +9,7 @@ int l_lim[3][4] ={0,}; //유효기간 입력
 time_t t; struct tm* monthandday;
 void beforerand(int _t) {  //사전 시드 설정 작업, 0이면 시간 포함 시드 설정, 1이면 코드로 시드설정
     if(!_t) srand(l_lim[0][0]+l_lim[0][1]+l_lim[0][2]+l_lim[0][3]+l_lim[1][0]+l_lim[1][1]+l_lim[1][2]+l_lim[1][3]+'a'+'u'+'t'+'u'+'m'+'n');
-    else srand('w'+'i'+'n'+'t'+'e'+'r');
+    else srand('s'+'p'+'r'+'i'+'n'+'g');
 }
 void gotoxy(int _x,int _y) { //gotoxy함수 
     COORD pos={_x, _y};
