@@ -147,22 +147,22 @@ void drawoletter() {   //편지 모양 쓰기
              case 1: printf("                        /              \\                        "); break;
              case 2: printf("                      /                  \\                      "); break;
              case 3: printf("   _________________/______________________\\_________________   "); break;
-             case 4: printf("  |                             |                            |  "); break;
-             case 5: printf("  |                            |                             |  "); break;
-             case 6: printf("  |                             |                            |  "); break;
-             case 7: printf("  |                            |                             |  "); break;
-             case 8: printf("  |                             |                            |  "); break;
-             case 9: printf("  |                            |                             |  "); break;
-            case 10: printf("| |                             |                            | |"); break;
-            case 11: printf("| _                            |                             _ |"); break;
-            case 12: printf("|   _                           |                          _   |"); break;
-            case 13: printf("|     _                        |                         _     |"); break;
-            case 14: printf("|       _                       |                      _       |"); break;
-            case 15: printf("|         _                    |                     _         |"); break;
-            case 16: printf("|           _                   |                  _           |"); break;
-            case 17: printf("|             _                |                 _             |"); break;
-            case 18: printf("|                _              |             _                |"); break;
-            case 19: printf("|                   _          |           _                   |"); break;
+             case 4: printf("  |                                                          |  "); break;
+             case 5: printf("  |                                                          |  "); break;
+             case 6: printf("  |                                                          |  "); break;
+             case 7: printf("  |                                                          |  "); break;
+             case 8: printf("  |                                                          |  "); break;
+             case 9: printf("  |                                                          |  "); break;
+            case 10: printf("| |                                                          | |"); break;
+            case 11: printf("| _                                                          _ |"); break;
+            case 12: printf("|   _                                                      _   |"); break;
+            case 13: printf("|     _                                                  _     |"); break;
+            case 14: printf("|       _                                              _       |"); break;
+            case 15: printf("|         _                                          _         |"); break;
+            case 16: printf("|           _                                      _           |"); break;
+            case 17: printf("|             _                                  _             |"); break;
+            case 18: printf("|                _                            _                |"); break;
+            case 19: printf("|                   _                      _                   |"); break;
             case 20: printf("|                       _              _                       |"); break;
             case 21: printf("|                          __________                          |"); break;
             case 22: printf("|                                                              |"); break;            
@@ -174,6 +174,14 @@ void drawoletter() {   //편지 모양 쓰기
             case 28: printf("|                                                              |"); break;
             case 29: printf(" -------------------------------------------------------------- "); break;
         }
+    }
+}
+void drawlletter() {
+    int j;
+    for(j=0;j<16;j++) {
+        gotoxy(87, 13+j);
+        if(j%2) printf("| ");
+        else printf(" |");
     }
 }
 void drawbody() {   //화면 출력 함수

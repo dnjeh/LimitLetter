@@ -4,7 +4,7 @@ int con=0, l_mc;
 int i, j, k, lselect=2, cnt=0;  //1일 시 읽기(디코딩)
 char  *command;
 FILE *fp, *fp2; intptr_t hFile; struct _finddatai64_t c_file;
-char l_tri[3][61], l_tit[101]; //처음, 마지막, 여담(추신)
+char l_tri[3][101], l_tit[101]; //처음, 마지막, 여담(추신)
 char l_ind[100][40]={'\0',}, path[8] = "*.let";
 int home(); int lsearch(int _f); int lread(int _f); int lwrite();
 
@@ -17,7 +17,7 @@ int main(){
     while(1) {
         switch(home()) {
         case 2:
-            lread(1);
+            lread(0);
             break;
         case 3:
             lwrite();
@@ -94,6 +94,7 @@ int lsearch(int _f) {
     while(1) {
         con=0;
         drawnletter();
+        drawlletter();
         for(j=(i/18)*18;j<(((i/18)+1)*18)&&j<cnt;j++) {
             if(i==cnt/18*18&&i&&i==j) {
                 drawoletter();
@@ -177,14 +178,14 @@ int lsearch(int _f) {
         if(lselect==2&&time_vaild()) {
             gotoxy(57, 32);                                                //단계 진입 전 안내문구
             printf("     %s에게                  ", l_tri[0]);
-            gotoxy(57, 33);
+            gotoxy(57, 34);
             printf("      %d.%02d.%02d/%02d ~ %d.%02d.%02d/%02d, %s 가", l_lim[1][0], l_lim[1][1], l_lim[1][2], l_lim[1][3], l_lim[0][0], l_lim[0][1], l_lim[0][2], l_lim[0][3], l_tri[1]);
-            gotoxy(57, 35);
+            gotoxy(57, 36);
             printf("         [읽기를 시작하시려면 space bar를 눌러주세요]     ");
         }
         else if(lselect==3) { //단계 진입 전 안내문구
             gotoxy(57, 33);
-            printf(" %s(으)로 시작하는 편지", l_tri[0]);
+            printf("  %s(으)로 시작하는 본문", l_tri[0]);
             gotoxy(57, 35);
             printf("         [작성을 시작하시려면 space bar를 눌러주세요]     ");
         } 
@@ -262,7 +263,7 @@ int lread(int _f) {
 }
 /*********************************************************************************************************************************/
 int lwrite() {
-    char _t[5];
+    char _t[5], lw_tt;
     if(!lsearch(0)) return 0;
     fclose(fp);
     fp=fopen(l_tit, "r");
@@ -274,48 +275,118 @@ int lwrite() {
         fgets(l_m[i], sizeof(l_m[i]), fp); 
     }
     fclose(fp);                                 //일단 다 읽어놓고 닫기
-    int l_goto[6][2] = {{62, 14}, {62, 16+1}, {62, 18+1}, {62, 19+1}, {61, 32}, {90, 34}};
-    char *l_stit[6]={"편지의 이름", "편지의 길이", "유효 시각", "", "보내는 이", "받는 이"};
-    char *l_sexp[6]={"파일의 이름으로서 보여지는 편지의 이름입니다. 작성중엔 지울 수 없습니다.", 
+    int l_goto[5][2] = {{62, 14}, {62, 16}, {62, 18}, {62, 20}, {70, 22}};
+    char *l_stit[5]={"편지의 이름", "편지의 길이", "유효 시각", "보내는 이", "받는 이"};
+    char *l_sexp[5]={"파일의 이름으로서 보여지는 편지의 이름입니다.", 
                      "본문의 길이입니다.", 
-                     "편지를 열람 가능해지는 시각 입니다.", 
-                     "편지를 열람 할 수 없어지는 시각 입니다.", 
-                     "보내는 이, 당신을 가르키는 문자열입니다. 작성 중엔 지울 수 없습니다.", 
-                     "받는 이를 가르키는 문자열입니다. 작성 중엔 지울 수 없습니다."};
-    int bre=1, wl_sel=0;   
+                     "편지를 열람 가능한 기간을 결정하는 시각 입니다.",  
+                     "보내는 이, 당신을 가르키는 문자열입니다.", 
+                     "받는 이를 가르키는 문자열입니다."};
+    int bre=1, wl_sel=0, wl_act=0, bre2=0;   
     drawoletter();
     timeland(1);
     while(bre) {
-        for(i=0;i<6;i++) {
+        bre2=1;
+        for(i=0;i<5;i++) {
             gotoxy(l_goto[i][0]-2, l_goto[i][1]);
-            printf("%c %s %c", wl_sel==i?(wl_sel==1?'X':'>'):' ', l_stit[i], i==3||i==0?'\0':':');
+            printf("%c %s %c", wl_sel==i?(wl_sel==1?'X':wl_act?'<':'>'):' ', l_stit[i], ':');
             switch(i) { 
-                case 0: 
-                    gotoxy(l_goto[i][0]-2+3, l_goto[i][1]+1);
-                    printf(": %s", l_tit);  
-                    break;
-                case 1: printf(" %d", l_mc); break;
-                case 2: printf(" %4d.%02d.%02d/%02d", l_lim[1][0], l_lim[1][1], l_lim[1][2], l_lim[1][3]); break;
-                case 3: printf("         ~ %4d.%02d.%02d/%02d", l_lim[0][0], l_lim[0][1], l_lim[0][2], l_lim[0][3]); break;
-                case 4: printf(" %s", l_tri[0]);  break;
-                case 5: printf(" %s", l_tri[1]);  break;
+                case 0: printf(" %s", l_tit); break;
+                case 1: printf(" %d line%c", l_mc, l_mc==1?'\0':'s'); break;
+                case 2: printf(" %4d.%02d.%02d/%02d - %4d.%02d.%02d/%02d", l_lim[0][0], l_lim[0][1], l_lim[0][2], l_lim[0][3], l_lim[1][0], l_lim[1][1], l_lim[1][2], l_lim[1][3]); break;
+                case 3: printf(" %s", l_tri[0]);  break;
+                case 4: printf(" %s", l_tri[1]);  break;
             }
         }
+        gotoxy(57, 33); printf(" /> %-65s",l_sexp[wl_sel]);
+        gotoxy(64, 22); printf("-✉-");
+        if(wl_act) {
+            CursorView(1);
+            if(wl_sel==2) {
+                switch(wl_act) {
+                    case 1: gotoxy(62+12, 18); break;
+                    case 2: gotoxy(62+12+5, 18); break;
+                    case 3: gotoxy(62+12+8, 18); break;
+                    case 4: gotoxy(62+12+11, 18); break;
+                    case 5: gotoxy(62+12+16, 18); break;
+                    case 6: gotoxy(62+12+16+5, 18); break;
+                    case 7: gotoxy(62+12+16+8, 18); break;
+                    case 8: gotoxy(62+12+16+11, 18); break;
+                }
+            }
+        }
+        if((!wl_sel||wl_sel==3||wl_sel==4)&&wl_act) {
+            i=0;
+            gotoxy(l_goto[wl_sel][0]+(!wl_sel?14:wl_sel==3?12:10), l_goto[wl_sel][1]);
+            while(bre2&&i<=100) {
+                switch(lw_tt=_getch()) {
+                case '<':
+                    bre2=0;
+                    wl_act=0;
+                    continue;
+                    break;
+                default:
+                    if(!wl_sel) {
+                        l_tit[i++]=lw_tt;
+                    }
+                    else {
+                        l_tri[wl_sel-3][i++]=lw_tt;
+                    }
+                    printf("%c", lw_tt);
+                    break;
+                }
+            }
+            if(!wl_sel) {
+                l_tit[i]='\0';
+            }
+            else {
+                l_tri[wl_sel-3][i]='\0';
+            }
+        }
+        if(bre2)
         switch(getch()) {
+            case 'e': 
+                if(wl_sel!=1) wl_act++;
+                if(wl_sel==2&&wl_act>8) wl_act=0;
+                if(wl_sel!=2&&wl_act>1) wl_act=0; 
+                break;
+            case 'q':
+                if(wl_sel!=1) wl_act--;
+                if(wl_sel==2&&wl_act<0) wl_act=8;
+                if(wl_sel!=2&&wl_act<0) wl_act=1;
+                break;
             case 'd': 
                 wl_sel++;
-                if(wl_sel>5) wl_sel=0;
+                if(wl_sel>4) wl_sel=0;
+                wl_act=0;
                 break;
             case 'a':
                 wl_sel--;
-                if(wl_sel<0) wl_sel=5;
+                if(wl_sel<0) wl_sel=4;
+                wl_act=0;
                 break;
-            case 'w': case 's':
+            case 'w': 
+                if(wl_sel==2&&wl_act) l_lim[(wl_act-1)/4][(wl_act-1)%4]++;
+                break;
+            case 's':
+                if(wl_sel==2&&wl_act) l_lim[(wl_act-1)/4][(wl_act-1)%4]--;
+                break;
+            case ' ':
                 bre=0;
                 break;
             default:
                 break;
         }
+        if(wl_act&&!wl_sel) {
+            strcpy(l_tit, "");
+        }
+        else if(wl_act&&wl_sel==3) {
+            strcpy(l_tri[0], "");
+        }
+        else if(wl_act&&wl_sel==4) {
+            strcpy(l_tri[1], "");
+        }
+        CursorView(0);
     }
     beforerand(1);
     for(i=0;i<3;i++) eCoding(1, l_tri[i], sizeof(l_tri[i]), '\0');                     //문단 인코딩 작업
@@ -329,8 +400,9 @@ int lwrite() {
         l_tit[i+1]='\0';
     }
     fp2=fopen(l_tit, "w");                       //변환된 편지이름으로 출력
-    for(i=0;i<3;i++) fprintf(fp2, "%s\n", l_tri[i]);
-    fprintf(fp2, "%d\n", l_mc);
+    for(i=0;i<2;i++) fprintf(fp2, "%s\n", l_tri[i]);
+    for(i=0;i<8;i++) fprintf(fp2, !i%4?"%04d":"%02d", l_lim[i/4][i%4]); 
+    fprintf(fp2, "\n%d\n", l_mc);
     for(i=0;i<l_mc;i++) {  //변환된 본문 출력
         fprintf(fp, "%s", l_m[i]);
     }
