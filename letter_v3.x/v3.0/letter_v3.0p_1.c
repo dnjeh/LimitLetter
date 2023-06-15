@@ -1,5 +1,5 @@
 #include "lletterc.h" //177 50 //94 ** //64 20 //⚙️
-
+//gcc -fdiagnostics-color=always -g .\letter_v3.0p_1.c .\lletterc.c .\src\lsearch.c .\src\lwrite.c .\src\lread.c .\src\ltuto.c -o letter_v3.0p_1.exe -lm
 int main(){
     int i, j, k;
     system("mode con cols=177 lines=50");        //사전 설정 문단
