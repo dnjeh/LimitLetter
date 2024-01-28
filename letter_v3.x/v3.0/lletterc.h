@@ -11,10 +11,10 @@ extern int l_lim[3][4]; //유효기간 입력
 extern int l_mc, lselect;  //1일 시 읽기(디코딩)
 extern char  *command;
 extern FILE *fp, *fp2;
-extern char l_tri[3][102], l_tit[102]; //처음, 마지막, 여담(추신)
-extern char l_ind[101][40], path[8];
-extern time_t t; 
-extern struct tm* monthandday;
+extern char l_tri[3][102], l_tit[102]; //처음, 마지막, 여담(추신) //제목
+extern char l_ind[101][40], path[8];  //파일 이름 나열 //파일 검색 사전
+extern time_t t;  //시간
+extern struct tm* monthandday; //so many tm
 
 //기능적 함수들
 void beforeRand(int _t); //사전 시드 설정 작업, 0이면 시간 포함 시드 설정, 1이면 코드로 시드설정
@@ -39,8 +39,9 @@ void draw_lletter();   //종속적, 열린 편지 모양에서 세로선
 void draw_body();   //화면 출력 함수
 
 //주요 구현 함수들
-int home();
-int lsearch(int _f);
-int lread(int _f);
-int lwrite();
-int ltuto();
+int home(); //메인화면에서 선택값 반환
+int lsearch(int _f); //파일 탐색 함순데 분리가 불완전함
+int lread(int _f); //편지 읽는 함수
+int lwrite(); //편지 쓰는 함수
+int ltuto(); //튜토리얼 함순데, 이거 조차 베타임
+int lpatch(); //패치노트 보는 함수. 비교적 간단함.
